@@ -1,0 +1,117 @@
+🚚 Brings in Data
+It collects data from different places — like the cloud, your servers, apps, and APIs.
+
+⏱ Real-Time Speed
+It processes all this data right away, like streaming — no waiting!
+
+🧠 Makes Data Smarter
+It doesn’t just move the data — it cleans it, adds context, and transforms it so it’s super useful.
+
+💡 Powers Smart Features
+It helps tools like Smartscape and Davis AI understand your environment better for analytics, monitoring, and insights.
+
+Let’s break this **Dynatrace platform architecture** down in a very simple way:
+
+---
+
+### 🧠 **What's Going On in This Diagram?**
+
+Imagine you're trying to make sense of **lots of data** coming from different places. Here's how Dynatrace handles it step by step:
+
+---
+
+### 1. 📡 **Various Data Sources**
+These are all the places your data comes from—apps, infrastructure, logs, metrics, events, traces, etc.
+
+---
+
+### 2. 🔄 **OpenPipeline**
+Think of this as a super-smart gatekeeper.  
+It does **real-time data transformation and contextualization** as the data flows in.
+
+So the moment data comes in → it's cleaned, enriched, and tagged properly.
+
+---
+
+### 3. 🧊🔥 **Grail Data Lakehouse**
+This is where all the transformed data is stored. It does a few cool things:
+
+- **Datawrapping**: Like putting the data into high-speed containers for fast access.
+- **Hot/Cold Storage**: Stores frequently used data in fast access (hot) and rarely used in slow access (cold).
+- **Scalable Storage**: Handles **huge amounts of data** across systems.
+  
+---
+
+### 4. 🧠 **Massive Parallel Processing**
+All that stored data can now be processed **super fast in parallel**, which means:
+
+- Faster results
+- Smarter analysis
+- Real-time answers
+
+---
+
+### 5. 🤖 **Answers & Intelligence (Davis AI)**
+At the end, this data powers smart features like:
+
+- **Ask Davis**: AI you can ask questions.
+- **Dashboards & Notebooks**: Custom queries for deep analysis.
+- **Interactive Exploration**: Visual tools to explore data.
+
+---
+
+### ✅ Summary in One Line:
+**Dynatrace uses OpenPipeline + Grail to turn raw data into instant insights using smart AI and high-speed processing.**
+
+Want me to relate this to a real-world example like an airport or a delivery service?
+
+This diagram explains **how Dynatrace stores and queries data inside its Grail Data Lakehouse** using a concept called **buckets**. Let’s break it down simply:
+
+---
+
+### 🪣 **What are Buckets?**
+
+- Buckets are **containers for data**.
+- Each bucket is assigned to **one specific table** like logs, events, spans, etc.
+- It’s how Grail organizes your data behind the scenes.
+
+---
+
+### 💾 **Left Side: Data Ingest and Storage**
+
+1. **Customer Data** comes in — logs, traces, metrics, etc.
+2. Data goes through OpenPipeline → gets contextualized and structured.
+3. Then it lands in **Grail’s hot/cold storage**, inside **buckets**.
+4. Each bucket is tagged and sorted into a table (e.g., logs).
+
+---
+
+### 🧠 **Middle: Permissions + Massive Parallel Processing**
+
+- When someone queries data (like searching logs), Dynatrace checks:
+  - Do they have **permission** to access those buckets?
+- It then uses **massive parallel processing** to scan relevant buckets fast.
+
+---
+
+### 🔎 **Right Side: User Query**
+
+- The user types a query like:  
+  ```dql
+  fetch logs from: 30m
+  | filter dt.system.bucket=="green1"
+  ```
+- Grail finds the right **buckets** (like the green ones shown), fetches only what’s needed, and returns the results **super fast**.
+
+---
+
+### ✅ In Short:
+
+- **Buckets = organized storage** units in Grail.
+- **Each bucket = one table type** (like logs or spans).
+- **Queries only scan the needed buckets**, making it **fast, scalable, and secure**.
+
+---
+
+Want a real-life analogy for "buckets" to help visualize it better?
+

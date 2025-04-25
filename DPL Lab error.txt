@@ -1,0 +1,3 @@
+fetch logs
+|filter matchesValue(loglevel,"ERROR")
+| parse content, """LD "]":Contents SPACE LD:Error "Status:"LD:Final"""
