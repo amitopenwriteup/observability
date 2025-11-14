@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynatrace Management Zones - Solution Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 60px;
+            display: none;
+            flex-direction: column;
+            position: relative;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            color: #1a202c;
+            font-size: 3em;
+            margin-bottom: 20px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #2d3748;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            margin-top: 20px;
+        }
+
+        h3 {
+            color: #4a5568;
+            font-size: 1.5em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        p, li {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 30px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #fef08a 0%, #fde047 100%);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .box {
+            background: #f7fafc;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .code-block {
+            background: #1a202c;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .card ul {
+            margin-left: 20px;
+        }
+
+        .card li {
+            color: white;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            font-size: 1.1em;
+            color: #718096;
+        }
+
+        .icon {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .success {
+            color: #38a169;
+            font-weight: 600;
+        }
+
+        .warning {
+            color: #d69e2e;
+            font-weight: 600;
+        }
+
+        .error {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>🎯 Dynatrace Management Zones</h1>
+            <h2>Solving Pipeline Alerting Challenges</h2>
+            <div class="box">
+                <h3>Your Current Challenges:</h3>
+                <ul>
+                    <li><span class="error">❌</span> Multiple pipeline failures generate only ONE alert</li>
+                    <li><span class="error">❌</span> Unable to segregate alerts by namespace/market</li>
+                    <li><span class="error">❌</span> Email alerts sent on every execution (empty results)</li>
+                    <li><span class="error">❌</span> No conditional logic in current alerting</li>
+                </ul>
+            </div>
+            <div class="box" style="border-left-color: #38a169;">
+                <h3>Management Zones Solution:</h3>
+                <p><span class="success">✓</span> Fine-grained access control and alerting segregation</p>
+                <p><span class="success">✓</span> Entity-based filtering (hosts, services, processes, metrics)</p>
+                <p><span class="success">✓</span> Individual alerts per namespace/pipeline</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: What are Management Zones -->
+        <div class="slide">
+            <h1>📋 What are Management Zones?</h1>
+            <p>Management Zones enable <span class="highlight">logical segregation</span> of your monitored environment into distinct groups.</p>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>🎯 Core Purpose</h3>
+                    <ul>
+                        <li>Define fine-grained access rights</li>
+                        <li>Group related entities together</li>
+                        <li>Isolate alerting per business unit</li>
+                        <li>Maintain end-to-end visibility</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🔧 Entity Types</h3>
+                    <ul>
+                        <li>Applications</li>
+                        <li>Services</li>
+                        <li>Process Groups</li>
+                        <li>Hosts</li>
+                        <li>Custom Metrics</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="box">
+                <h3>Key Concept:</h3>
+                <p>Rules are executed <span class="highlight">periodically in the background</span>. Entities matching rules get zones assigned automatically, while non-matching entities have zones removed.</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Rule Types -->
+        <div class="slide">
+            <h1>⚙️ Management Zone Rule Types</h1>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rule Type</th>
+                        <th>Use Case</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Dimensional Data</strong></td>
+                        <td>Filter by metric dimensions</td>
+                        <td>namespace=prod-us, pipeline=etl-daily</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Process Group</strong></td>
+                        <td>Group by application/service</td>
+                        <td>Java processes running DataPipeline</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Host</strong></td>
+                        <td>Infrastructure-based grouping</td>
+                        <td>Hosts tagged with "market:APAC"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Service</strong></td>
+                        <td>Microservice segregation</td>
+                        <td>Services containing "broker"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tags</strong></td>
+                        <td>Custom metadata filtering</td>
+                        <td>environment:production</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="box">
+                <p><span class="icon">💡</span> <strong>Best Practice:</strong> Use dimensional rules for METRIC types to filter based on custom dimensions like namespace, pipeline name, or market identifier.</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Solution for Challenge 1 -->
+        <div class="slide">
+            <h1>🔧 Solution: Namespace Segregation</h1>
+            <h3>Challenge: One alert for multiple pipeline failures</h3>
+
+            <div class="code-block">
+Management Zone: "Market-US-Pipelines"
+Rule Type: Dimensional rule for METRIC
+Conditions:
+  - dimension.namespace = "us-market"
+  - dimension.pipeline_type = "ETL"
+
+Management Zone: "Market-EU-Pipelines"  
+Rule Type: Dimensional rule for METRIC
+Conditions:
+  - dimension.namespace = "eu-market"
+  - dimension.pipeline_type = "ETL"
+
+Management Zone: "Market-APAC-Pipelines"
+Rule Type: Dimensional rule for METRIC
+Conditions:
+  - dimension.namespace = "apac-market"
+  - dimension.pipeline_type = "ETL"
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>✓ Benefits</h3>
+                    <ul>
+                        <li>Separate alert per namespace</li>
+                        <li>Individual remedy tickets</li>
+                        <li>Team-specific notifications</li>
+                        <li>Clear failure attribution</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📊 Result</h3>
+                    <ul>
+                        <li>3 pipelines fail → 3 alerts</li>
+                        <li>Each with unique context</li>
+                        <li>Automated ticket creation</li>
+                        <li>No alert consolidation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Alerting Configuration -->
+        <div class="slide">
+            <h1>🚨 Alerting Configuration</h1>
+            <h3>Setting up per-zone conditional alerts</h3>
+
+            <div class="box">
+                <h3>Step 1: Create Alerting Profile per Management Zone</h3>
+                <p>Settings → Alerting → Alerting profiles → Add alerting profile</p>
+            </div>
+
+            <div class="code-block">
+Alerting Profile: "US-Market-Critical-Failures"
+Management Zone Filter: "Market-US-Pipelines"
+Severity Rules:
+  - Error rate > 0% (immediate alert)
+  - Execution failure detected
+  
+Notification:
+  - Email to: us-ops-team@company.com
+  - ServiceNow integration (create ticket)
+  - Include: namespace, pipeline_id, error_details
+            </div>
+
+            <div class="box" style="border-left-color: #38a169;">
+                <h3><span class="icon">✓</span> Solution for Challenge 2: Conditional Email Alerts</h3>
+                <ul>
+                    <li><strong>No more empty emails:</strong> Alerts trigger only when conditions are met</li>
+                    <li><strong>Rich context:</strong> Emails include actual failure data</li>
+                    <li><strong>Smart deduplication:</strong> Prevents alert storms</li>
+                    <li><strong>Maintenance windows:</strong> Suppress alerts during deployments</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6: Dimensional Rules Setup -->
+        <div class="slide">
+            <h1>📐 Setting Up Dimensional Rules</h1>
+            
+            <div class="box">
+                <h3>Configuration Path:</h3>
+                <p>Settings → Preferences → Management zones → Add management zone</p>
+            </div>
+
+            <h3>Example: Pipeline-Specific Zone</h3>
+            <div class="code-block">
+Management Zone Name: "ETL-Pipeline-Customer-Data"
+
+Rule 1: Dimensional rule for METRIC
+  Type: METRIC
+  Conditions:
+    - dimension.pipeline_name = "customer_etl"
+    - dimension.environment = "production"
+    - dimension.namespace begins with "prod-"
+
+Rule 2: Process Group
+  Conditions:
+    - Process group name contains "CustomerETL"
+    - Tag exists: "pipeline:customer-data"
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>⚠️ Important Notes</h3>
+                    <ul>
+                        <li>Rules execute periodically</li>
+                        <li>Complex rules may delay execution</li>
+                        <li>All related entities must be present</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🎯 Best Practices</h3>
+                    <ul>
+                        <li>Use specific dimension keys</li>
+                        <li>Avoid overly complex rules</li>
+                        <li>Test with preview functionality</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Integration with Remedy -->
+        <div class="slide">
+            <h1>🎫 Automated Ticket Creation</h1>
+            <h3>ServiceNow / Remedy Integration</h3>
+
+            <div class="box">
+                <h3>Setup: Problem Notifications</h3>
+                <p>Settings → Integration → Problem notifications → Add notification</p>
+            </div>
+
+            <div class="code-block">
+Notification Configuration:
+  
+Filter by Management Zone: "Market-US-Pipelines"
+Notification Type: ServiceNow / Custom Webhook
+
+Payload Template:
+{
+  "short_description": "Pipeline Failure: {ProblemTitle}",
+  "description": "Namespace: {dimension.namespace}\n
+                  Pipeline: {dimension.pipeline_name}\n
+                  Error: {ProblemDetailsText}",
+  "urgency": "2",
+  "impact": "2",
+  "assignment_group": "Pipeline-Ops-Team",
+  "category": "Data Pipeline",
+  "subcategory": "Execution Failure"
+}
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>✓ Automated Flow</h3>
+                    <ul>
+                        <li>Pipeline fails in US namespace</li>
+                        <li>Dynatrace detects anomaly</li>
+                        <li>Management zone filters event</li>
+                        <li>Ticket auto-created in Remedy</li>
+                        <li>Team notified via email</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📋 Ticket Contains</h3>
+                    <ul>
+                        <li>Namespace identifier</li>
+                        <li>Pipeline name</li>
+                        <li>Exact failure reason</li>
+                        <li>Timestamp</li>
+                        <li>Recommended actions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Implementation Roadmap -->
+        <div class="slide">
+            <h1>🗺️ Implementation Roadmap</h1>
+            
+            <h3>Phase 1: Setup (Week 1)</h3>
+            <div class="box">
+                <ul>
+                    <li>Define namespace/market identifiers in your pipelines</li>
+                    <li>Ensure custom dimensions are sent to Dynatrace</li>
+                    <li>Create Management Zones for each namespace/market</li>
+                    <li>Test zone assignment with preview functionality</li>
+                </ul>
+            </div>
+
+            <h3>Phase 2: Alerting Configuration (Week 2)</h3>
+            <div class="box">
+                <ul>
+                    <li>Create alerting profiles per Management Zone</li>
+                    <li>Define conditional rules (failure threshold, error types)</li>
+                    <li>Configure email templates with proper data</li>
+                    <li>Test alert generation in dev environment</li>
+                </ul>
+            </div>
+
+            <h3>Phase 3: Integration & Testing (Week 3)</h3>
+            <div class="box">
+                <ul>
+                    <li>Set up ServiceNow/Remedy webhook integration</li>
+                    <li>Configure custom payload with namespace data</li>
+                    <li>Test end-to-end flow: failure → alert → ticket</li>
+                    <li>Validate no duplicate tickets or empty emails</li>
+                </ul>
+            </div>
+
+            <h3>Phase 4: Production Rollout (Week 4)</h3>
+            <div class="box">
+                <ul>
+                    <li>Enable monitoring for production pipelines</li>
+                    <li>Monitor alert accuracy and ticket creation</li>
+                    <li>Fine-tune thresholds and conditions</li>
+                    <li>Document runbooks for operations team</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 9: Expected Outcomes -->
+        <div class="slide">
+            <h1>🎯 Expected Outcomes</h1>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Before Dynatrace MZ</h3>
+                    <ul>
+                        <li class="error">1 alert for 5 failures</li>
+                        <li class="error">No namespace context</li>
+                        <li class="error">Empty email notifications</li>
+                        <li class="error">Manual ticket creation</li>
+                        <li class="error">Alert fatigue</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>After Dynatrace MZ</h3>
+                    <ul>
+                        <li class="success">5 alerts for 5 failures</li>
+                        <li class="success">Full namespace/pipeline context</li>
+                        <li class="success">Only real failure notifications</li>
+                        <li class="success">Auto-generated tickets</li>
+                        <li class="success">Actionable, targeted alerts</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;">Measurable Improvements:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Before</th>
+                        <th>After</th>
+                        <th>Improvement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Alert Accuracy</td>
+                        <td>20%</td>
+                        <td>95%</td>
+                        <td class="success">+375%</td>
+                    </tr>
+                    <tr>
+                        <td>Mean Time to Identify (MTTI)</td>
+                        <td>45 min</td>
+                        <td>5 min</td>
+                        <td class="success">-89%</td>
+                    </tr>
+                    <tr>
+                        <td>False Positive Rate</td>
+                        <td>80%</td>
+                        <td>5%</td>
+                        <td class="success">-94%</td>
+                    </tr>
+                    <tr>
+                        <td>Manual Ticket Creation</td>
+                        <td>100%</td>
+                        <td>0%</td>
+                        <td class="success">-100%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 10: Summary -->
+        <div class="slide">
+            <h1>📝 Summary & Next Steps</h1>
+            
+            <div class="box" style="border-left-color: #38a169;">
+                <h3>✓ How Management Zones Solve Your Challenges:</h3>
+                <ul>
+                    <li><strong>Challenge 1:</strong> Namespace segregation enables individual alerts per pipeline failure</li>
+                    <li><strong>Challenge 2:</strong> Conditional alerting eliminates empty/unnecessary emails</li>
+                    <li><strong>Bonus:</strong> Automated ticket creation with full context for each failure</li>
+                </ul>
+            </div>
+
+            <h3>Immediate Next Steps:</h3>
+            <div class="box">
+                <ol>
+                    <li>Review your current pipeline metadata (namespaces, identifiers)</li>
+                    <li>Enable custom dimension reporting to Dynatrace</li>
+                    <li>Create your first Management Zone for one namespace</li>
+                    <li>Set up a test alerting profile</li>
+                    <li>Validate alert generation in dev/test</li>
+                </ol>
+            </div>
+
+            <h3>Resources:</h3>
+            <div class="box">
+                <p><strong>Dynatrace Documentation:</strong></p>
+                <ul>
+                    <li>Management Zones: docs.dynatrace.com/management-zones</li>
+                    <li>Alerting Profiles: docs.dynatrace.com/alerting-profiles</li>
+                    <li>Problem Notifications: docs.dynatrace.com/problem-notifications</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <h2 style="color: #667eea;">Questions?</h2>
+            </div>
+        </div>
+
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">10</span>
+        </div>
+
+        <div class="navigation">
+            <button id="prev-btn" onclick="prevSlide()">← Previous</button>
+            <button id="next-btn" onclick="nextSlide()">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const currentSlideSpan = document.getElementById('current-slide');
+        const totalSlidesSpan = document.getElementById('total-slides');
+
+        totalSlidesSpan.textContent = totalSlides;
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                }
+            });
+
+            currentSlideSpan.textContent = currentSlide + 1;
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        updateSlide();
+    </script>
+</body>
+</html>

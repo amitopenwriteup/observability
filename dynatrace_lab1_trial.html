@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAB 1: Dynatrace SaaS Free Trial Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #1496ff;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #6b2fb5;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #1496ff;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #1496ff;
+            margin: 25px 0 15px 0;
+        }
+
+        h4 {
+            font-size: 1.3em;
+            color: #6b2fb5;
+            margin: 20px 0 10px 0;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .lab-header {
+            background: linear-gradient(120deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .lab-header h3 {
+            color: white;
+            margin: 0 0 15px 0;
+        }
+
+        .lab-header p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .content-box {
+            background: #f8f9fa;
+            border-left: 5px solid #1496ff;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .step-box {
+            background: white;
+            border: 3px solid #1496ff;
+            padding: 30px;
+            margin: 25px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+        .step-title {
+            display: inline-block;
+            font-size: 1.5em;
+            color: #6b2fb5;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
+        ul {
+            margin: 20px 0;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #1496ff;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .sub-steps {
+            margin-left: 20px;
+            margin-top: 15px;
+        }
+
+        .sub-steps li {
+            font-size: 1.05em;
+            margin: 12px 0;
+        }
+
+        .sub-steps li:before {
+            content: "→";
+            color: #6b2fb5;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .warning {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .success {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .tip {
+            background: #f3e5f5;
+            border-left: 5px solid #9c27b0;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .title-slide {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            color: white;
+            font-size: 4em;
+        }
+
+        .title-slide .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.6em;
+        }
+
+        .screenshot-placeholder {
+            background: #f5f5f5;
+            border: 2px dashed #1496ff;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            color: #666;
+            font-style: italic;
+        }
+
+        .checklist {
+            background: white;
+            border: 2px solid #4caf50;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .checklist h4 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+
+        .checklist-item {
+            padding: 10px;
+            margin: 8px 0;
+            background: #f5f5f5;
+            border-radius: 5px;
+            font-size: 1.05em;
+        }
+
+        .checklist-item:before {
+            content: "☐ ";
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(20, 150, 255, 0.3);
+        }
+
+        .card h4 {
+            color: white;
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title Slide -->
+        <div class="slide title-slide">
+            <h1>LAB 1</h1>
+            <p class="subtitle">Setting Up Your Dynatrace SaaS Free Trial</p>
+            <p style="font-size: 1.2em; margin-top: 20px;">Step-by-Step Hands-On Lab</p>
+        </div>
+
+        <!-- Lab Overview -->
+        <div class="slide">
+            <div class="lab-header">
+                <h3>🎯 Lab Objectives</h3>
+                <p><strong>Duration:</strong> 15-20 minutes</p>
+                <p><strong>Difficulty:</strong> Beginner</p>
+                <p style="margin-top: 15px;"><strong>What You'll Learn:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>How to sign up for a Dynatrace SaaS free trial</li>
+                    <li>Understanding the Dynatrace environment structure</li>
+                    <li>Navigating the Dynatrace UI</li>
+                    <li>Generating and managing access tokens</li>
+                    <li>Exploring the deployment options</li>
+                </ul>
+            </div>
+
+            <div class="content-box">
+                <h3>Prerequisites</h3>
+                <ul>
+                    <li>Valid email address (business email recommended)</li>
+                    <li>Web browser (Chrome, Firefox, Edge, or Safari)</li>
+                    <li>Internet connectivity</li>
+                    <li>No credit card required for trial</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <h4>📊 Trial Limits</h4>
+                <p><strong>Duration:</strong> 15 days full-featured trial</p>
+                <p><strong>Hosts:</strong> Monitor up to 8 hosts</p>
+                <p><strong>Features:</strong> Full access to all Dynatrace capabilities</p>
+                <p><strong>Data Retention:</strong> 35 days</p>
+                <p><strong>Support:</strong> Community support and documentation</p>
+            </div>
+
+            <div class="warning">
+                <strong>⚠️ Important:</strong> Use a business email address when possible. Free email providers 
+                (Gmail, Yahoo, etc.) may have limited trial features or require additional verification.
+            </div>
+        </div>
+
+        <!-- Step 1: Registration -->
+        <div class="slide">
+            <h2>Step 1: Sign Up for Free Trial</h2>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">1</span>
+                    <span class="step-title">Navigate to Dynatrace Website</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Open your web browser</li>
+                        <li>Go to <code>https://www.dynatrace.com/trial</code></li>
+                        <li>You should see the "Start your free trial" page</li>
+                    </ul>
+                </div>
+
+                <div class="screenshot-placeholder">
+                    📸 Screenshot: Dynatrace trial landing page with "Start free trial" button
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">2</span>
+                    <span class="step-title">Fill Registration Form</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click on <strong>"Start free trial"</strong> button</li>
+                        <li>Enter your <strong>Business Email</strong> address</li>
+                        <li>Enter your <strong>Full Name</strong></li>
+                        <li>Enter your <strong>Company Name</strong></li>
+                        <li>Select your <strong>Country/Region</strong></li>
+                        <li>Create a strong <strong>Password</strong>
+                            <ul class="sub-steps">
+                                <li>Minimum 8 characters</li>
+                                <li>Must include uppercase, lowercase, and numbers</li>
+                                <li>Special characters recommended</li>
+                            </ul>
+                        </li>
+                        <li>Check the box to agree to terms and conditions</li>
+                        <li>Click <strong>"Start trial"</strong></li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 Tip:</strong> Choose a region close to your location for better performance:
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>US:</strong> For North America</li>
+                        <li><strong>EU:</strong> For Europe</li>
+                        <li><strong>APAC:</strong> For Asia-Pacific (Sydney, Singapore)</li>
+                        <li><strong>AUS:</strong> For Australia</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">3</span>
+                    <span class="step-title">Email Verification</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Check your email inbox for verification email from Dynatrace</li>
+                        <li>Open the email with subject: <em>"Verify your Dynatrace account"</em></li>
+                        <li>Click on the <strong>"Verify email"</strong> button or link</li>
+                        <li>You'll be redirected to the Dynatrace login page</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <strong>⚠️ Note:</strong> If you don't receive the email within 5 minutes:
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Check your spam/junk folder</li>
+                        <li>Add noreply@dynatrace.com to your contacts</li>
+                        <li>Use the "Resend verification email" option</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: First Login -->
+        <div class="slide">
+            <h2>Step 2: First Login & Environment Setup</h2>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">4</span>
+                    <span class="step-title">Initial Login</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>After email verification, you'll be at the login page</li>
+                        <li>Enter your <strong>email address</strong></li>
+                        <li>Enter your <strong>password</strong></li>
+                        <li>Click <strong>"Sign in"</strong></li>
+                    </ul>
+                </div>
+
+                <div class="screenshot-placeholder">
+                    📸 Screenshot: Dynatrace login page
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">5</span>
+                    <span class="step-title">Environment Creation</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Dynatrace automatically creates your first environment</li>
+                        <li>Environment naming convention: <code>[your-name]-trial</code> or custom name</li>
+                        <li>You'll see "Creating your environment" progress indicator</li>
+                        <li>Wait 30-60 seconds for provisioning to complete</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h4>🏗️ What is an Environment?</h4>
+                    <p>An environment is an isolated monitoring workspace with:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Its own URL (e.g., <code>abc12345.live.dynatrace.com</code>)</li>
+                        <li>Separate data storage and retention</li>
+                        <li>Independent user access and permissions</li>
+                        <li>Unique configuration and settings</li>
+                        <li>Own set of access tokens</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">6</span>
+                    <span class="step-title">Welcome Screen</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>You'll land on the Dynatrace welcome screen</li>
+                        <li>You may see a guided tour popup - you can take it or skip it</li>
+                        <li>Note your environment ID in the URL bar</li>
+                        <li>Familiarize yourself with the main navigation menu on the left</li>
+                    </ul>
+                </div>
+
+                <div class="tip">
+                    <strong>💡 Pro Tip:</strong> Bookmark your environment URL for quick access:
+                    <br><code>https://[your-env-id].live.dynatrace.com</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: UI Navigation -->
+        <div class="slide">
+            <h2>Step 3: Exploring the Dynatrace UI</h2>
+
+            <div class="content-box">
+                <h3>Main Navigation Areas</h3>
+                <p style="margin-bottom: 20px;">Let's explore the key sections of the Dynatrace interface:</p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h4>🏠 Home / Overview</h4>
+                    <p>Dashboard showing environment health summary</p>
+                </div>
+                <div class="card">
+                    <h4>📊 Dashboards</h4>
+                    <p>Custom and pre-built visualization dashboards</p>
+                </div>
+                <div class="card">
+                    <h4>❗ Problems</h4>
+                    <p>AI-detected issues and anomalies</p>
+                </div>
+                <div class="card">
+                    <h4>🔍 Explore</h4>
+                    <p>Search and explore all monitored entities</p>
+                </div>
+                <div class="card">
+                    <h4>📱 Applications</h4>
+                    <p>Real user monitoring and web applications</p>
+                </div>
+                <div class="card">
+                    <h4>⚙️ Services</h4>
+                    <p>Backend services and transactions</p>
+                </div>
+                <div class="card">
+                    <h4>🖥️ Infrastructure</h4>
+                    <p>Hosts, processes, and infrastructure components</p>
+                </div>
+                <div class="card">
+                    <h4>☁️ Cloud</h4>
+                    <p>AWS, Azure, GCP, and Kubernetes monitoring</p>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">7</span>
+                    <span class="step-title">Navigate Key Sections</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click on <strong>"Infrastructure"</strong> in the left menu
+                            <ul class="sub-steps">
+                                <li>Click "Hosts" - you'll see no hosts yet (expected)</li>
+                                <li>Click "Processes" - empty for now</li>
+                            </ul>
+                        </li>
+                        <li>Click on <strong>"Applications"</strong>
+                            <ul class="sub-steps">
+                                <li>No applications monitored yet</li>
+                                <li>Note the "Get started" options</li>
+                            </ul>
+                        </li>
+                        <li>Click on <strong>"Problems"</strong>
+                            <ul class="sub-steps">
+                                <li>This is where Davis AI will show detected issues</li>
+                                <li>Currently empty (no data yet)</li>
+                            </ul>
+                        </li>
+                        <li>Click on <strong>"Dashboards"</strong>
+                            <ul class="sub-steps">
+                                <li>See pre-built dashboard templates</li>
+                                <li>You can create custom dashboards here</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Deployment Options -->
+        <div class="slide">
+            <h2>Step 4: Understanding Deployment Options</h2>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">8</span>
+                    <span class="step-title">Access Deploy Dynatrace</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click on <strong>"Deploy Dynatrace"</strong> in the left navigation menu</li>
+                        <li>Or click your profile icon (top right) → <strong>"Deploy Dynatrace"</strong></li>
+                        <li>You'll see the deployment hub with multiple options</li>
+                    </ul>
+                </div>
+
+                <div class="screenshot-placeholder">
+                    📸 Screenshot: Deploy Dynatrace page showing deployment options
+                </div>
+            </div>
+
+            <div class="content-box">
+                <h3>Deployment Options Overview</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Option</th>
+                            <th>Description</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>OneAgent</strong></td>
+                            <td>Full-stack monitoring agent</td>
+                            <td>Hosts, VMs, cloud instances</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ActiveGate</strong></td>
+                            <td>Proxy and integration gateway</td>
+                            <td>Restricted networks, cloud monitoring</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kubernetes</strong></td>
+                            <td>Operator-based deployment</td>
+                            <td>Container orchestration platforms</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cloud Platforms</strong></td>
+                            <td>Native cloud integrations</td>
+                            <td>AWS, Azure, GCP services</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Application Monitoring</strong></td>
+                            <td>RUM JavaScript snippet</td>
+                            <td>Web application user monitoring</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">9</span>
+                    <span class="step-title">Explore OneAgent Installation</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click on <strong>"Start installation"</strong> under OneAgent</li>
+                        <li>Select your operating system:
+                            <ul class="sub-steps">
+                                <li>Linux</li>
+                                <li>Windows</li>
+                                <li>AIX</li>
+                                <li>z/OS</li>
+                            </ul>
+                        </li>
+                        <li>Note the installation command displayed (don't run it yet)</li>
+                        <li>Observe that it includes your environment ID and token automatically</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h4>Example OneAgent Installation Command (Linux):</h4>
+                    <div class="code-block">
+wget -O Dynatrace-OneAgent-Linux.sh "https://[env-id].live.dynatrace.com/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default"
+sudo /bin/sh Dynatrace-OneAgent-Linux.sh
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5: Access Tokens -->
+        <div class="slide">
+            <h2>Step 5: Managing Access Tokens</h2>
+
+            <div class="content-box">
+                <h3>What are Access Tokens?</h3>
+                <p style="font-size: 1.1em; line-height: 1.7;">
+                    Access tokens are authentication credentials used by OneAgent, APIs, and integrations 
+                    to securely communicate with your Dynatrace environment.
+                </p>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">10</span>
+                    <span class="step-title">View Existing Tokens</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click on your <strong>profile icon</strong> (top right corner)</li>
+                        <li>Select <strong>"Access tokens"</strong> from the dropdown menu</li>
+                        <li>Or navigate to: Settings → Integration → Access tokens</li>
+                        <li>You'll see a default token already created: <strong>"Default OneAgent install token"</strong></li>
+                    </ul>
+                </div>
+
+                <div class="screenshot-placeholder">
+                    📸 Screenshot: Access tokens management page
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">11</span>
+                    <span class="step-title">Create a New Token</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click <strong>"Generate new token"</strong> button</li>
+                        <li>Enter a token name: <code>Lab-API-Token</code></li>
+                        <li>Search and select the following scopes:
+                            <ul class="sub-steps">
+                                <li><strong>API v2:</strong> Read entities, Read metrics, Write metrics</li>
+                                <li><strong>API v1:</strong> Access problem and event feed</li>
+                                <li><strong>Logs:</strong> Ingest logs</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>"Generate token"</strong></li>
+                        <li>Copy the token immediately (you won't see it again!)</li>
+                        <li>Store it securely in a text file for future use</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <strong>⚠️ Security Best Practice:</strong>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Never share tokens publicly or commit them to source control</li>
+                        <li>Create separate tokens for different purposes</li>
+                        <li>Use minimum required scopes (principle of least privilege)</li>
+                        <li>Rotate tokens periodically</li>
+                        <li>Revoke unused tokens immediately</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>📝 Common Token Scopes</h4>
+                <table style="margin-top: 15px;">
+                    <thead>
+                        <tr>
+                            <th>Scope</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>InstallerDownload</td>
+                            <td>Download OneAgent installer</td>
+                        </tr>
+                        <tr>
+                            <td>DataExport</td>
+                            <td>Export monitoring data</td>
+                        </tr>
+                        <tr>
+                            <td>ReadConfig</td>
+                            <td>Read configuration via API</td>
+                        </tr>
+                        <tr>
+                            <td>WriteConfig</td>
+                            <td>Modify configuration via API</td>
+                        </tr>
+                        <tr>
+                            <td>metrics.read</td>
+                            <td>Query metrics via API v2</td>
+                        </tr>
+                        <tr>
+                            <td>metrics.write</td>
+                            <td>Push custom metrics</td>
+                        </tr>
+                        <tr>
+                            <td>logs.ingest

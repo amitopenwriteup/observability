@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAB 3: Exploring Dynatrace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #1496ff;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #6b2fb5;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #1496ff;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #1496ff;
+            margin: 25px 0 15px 0;
+        }
+
+        h4 {
+            font-size: 1.3em;
+            color: #6b2fb5;
+            margin: 20px 0 10px 0;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .lab-header {
+            background: linear-gradient(120deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .lab-header h3 {
+            color: white;
+            margin: 0 0 15px 0;
+        }
+
+        .lab-header p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .content-box {
+            background: #f8f9fa;
+            border-left: 5px solid #1496ff;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .step-box {
+            background: white;
+            border: 3px solid #1496ff;
+            padding: 30px;
+            margin: 25px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+        .step-title {
+            display: inline-block;
+            font-size: 1.5em;
+            color: #6b2fb5;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
+        ul {
+            margin: 20px 0;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #1496ff;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .sub-steps {
+            margin-left: 20px;
+            margin-top: 15px;
+        }
+
+        .sub-steps li {
+            font-size: 1.05em;
+            margin: 12px 0;
+        }
+
+        .sub-steps li:before {
+            content: "→";
+            color: #6b2fb5;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .warning {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .success {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .tip {
+            background: #f3e5f5;
+            border-left: 5px solid #9c27b0;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .title-slide {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            color: white;
+            font-size: 4em;
+        }
+
+        .title-slide .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.6em;
+        }
+
+        .screenshot-placeholder {
+            background: #f5f5f5;
+            border: 2px dashed #1496ff;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            color: #666;
+            font-style: italic;
+        }
+
+        .exercise-box {
+            background: #fff3e0;
+            border: 3px solid #ff9800;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .exercise-box h4 {
+            color: #e65100;
+            margin-top: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(20, 150, 255, 0.3);
+        }
+
+        .card h4 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .next-lab {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .next-lab h3 {
+            color: white;
+            margin: 0 0 15px 0;
+        }
+
+        .lab-series {
+            background: white;
+            border: 2px solid #1496ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .lab-item {
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #1496ff;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .lab-item.completed {
+            border-left-color: #4caf50;
+            background: #e8f5e9;
+        }
+
+        .lab-item.current {
+            border-left-color: #ff9800;
+            background: #fff3e0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title Slide -->
+        <div class="slide title-slide">
+            <h1>LAB 3</h1>
+            <p class="subtitle">Exploring Dynatrace After OneAgent Installation</p>
+            <p style="font-size: 1.2em; margin-top: 20px;">Understanding Host, Process & Service Discovery</p>
+        </div>
+
+        <!-- Lab Overview -->
+        <div class="slide">
+            <div class="lab-header">
+                <h3>🎯 Lab Objectives</h3>
+                <p><strong>Duration:</strong> 30-40 minutes</p>
+                <p><strong>Difficulty:</strong> Beginner to Intermediate</p>
+                <p style="margin-top: 15px;"><strong>What You'll Learn:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>Navigate and understand the Dynatrace host view</li>
+                    <li>Explore process-level monitoring and metrics</li>
+                    <li>Discover automatically detected services</li>
+                    <li>Understand Smartscape topology visualization</li>
+                    <li>Analyze distributed traces with PurePath</li>
+                    <li>Create your first custom dashboard</li>
+                </ul>
+            </div>
+
+            <div class="content-box">
+                <h3>Prerequisites</h3>
+                <ul>
+                    <li>Completed LAB 1: Dynatrace SaaS account setup</li>
+                    <li>Completed LAB 2: OneAgent installed on Linux host</li>
+                    <li>Host has been monitored for at least 10-15 minutes</li>
+                    <li>Some application traffic running (web server, database, etc.)</li>
+                </ul>
+            </div>
+
+            <div class="warning">
+                <strong>⏱️ Wait Time:</strong> If you just installed OneAgent, wait 10-15 minutes for full discovery. 
+                You'll see the host immediately, but services and full topology need some time and traffic to be detected.
+            </div>
+        </div>
+
+        <!-- Part 1: Host Exploration -->
+        <div class="slide">
+            <h2>Part 1: Host-Level Monitoring</h2>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">1</span>
+                    <span class="step-title">Navigate to Hosts View</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>In the left navigation menu, click <strong>"Infrastructure"</strong></li>
+                        <li>Click <strong>"Hosts"</strong></li>
+                        <li>You should see your monitored host listed</li>
+                        <li>Note the health status icon (green = healthy)</li>
+                    </ul>
+                </div>
+
+                <div class="screenshot-placeholder">
+                    📸 Screenshot: Hosts list view showing your Linux host
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">2</span>
+                    <span class="step-title">Explore Host Details</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click on your host name to open the host detail page</li>
+                        <li>Observe the top section showing:
+                            <ul class="sub-steps">
+                                <li>Host name and IP address</li>
+                                <li>Operating system and version</li>
+                                <li>CPU cores and total memory</li>
+                                <li>OneAgent version</li>
+                                <li>Monitoring status and health</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h4>📊 Host Overview Sections</h4>
+                    <p><strong>Properties:</strong> Static information about the host</p>
+                    <p><strong>Health:</strong> Current health status and alerts</p>
+                    <p><strong>Processes:</strong> Number of running processes detected</p>
+                    <p><strong>Monitoring:</strong> OneAgent configuration and status</p>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">3</span>
+                    <span class="step-title">Analyze Host Metrics</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Scroll down to view the metrics charts:
+                            <ul class="sub-steps">
+                                <li><strong>CPU usage:</strong> Overall and per-core utilization</li>
+                                <li><strong>Memory:</strong> Used vs available, swap usage</li>
+                                <li><strong>Disk:</strong> I/O operations, throughput, latency</li>
+                                <li><strong>Network:</strong> Traffic in/out, errors, retransmissions</li>
+                            </ul>
+                        </li>
+                        <li>Click on any metric chart to see detailed view</li>
+                        <li>Use the time selector (top right) to change time range</li>
+                        <li>Try different time ranges: Last 2 hours, Last 6 hours, Last day</li>
+                    </ul>
+                </div>
+
+                <div class="tip">
+                    <strong>💡 Pro Tip:</strong> Click and drag on any chart to zoom into a specific time period. 
+                    Right-click to reset the zoom.
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>✏️ Exercise 1: Host Analysis</h4>
+                <p>Answer these questions by exploring your host:</p>
+                <ul style="margin-left: 20px; margin-top: 15px;">
+                    <li>What is the average CPU usage over the last hour?</li>
+                    <li>How much memory is currently being used?</li>
+                    <li>What is the network traffic pattern?</li>
+                    <li>Are there any disk I/O bottlenecks?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Part 2: Process Discovery -->
+        <div class="slide">
+            <h2>Part 2: Process-Level Monitoring</h2>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">4</span>
+                    <span class="step-title">View All Processes</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>From the host detail page, scroll down to <strong>"Processes"</strong> section</li>
+                        <li>Or navigate to: Infrastructure → <strong>"Processes and Containers"</strong></li>
+                        <li>You'll see all detected processes grouped by technology</li>
+                        <li>Notice different process types:
+                            <ul class="sub-steps">
+                                <li>Application processes (Java, .NET, Node.js, etc.)</li>
+                                <li>Web servers (Apache, NGINX)</li>
+                                <li>Databases (MySQL, PostgreSQL, MongoDB)</li>
+                                <li>System processes</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h4>🔍 Process Classification</h4>
+                    <p>Dynatrace automatically classifies processes:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Monitored:</strong> Deep instrumentation and code-level visibility</li>
+                        <li><strong>Detected:</strong> Infrastructure monitoring only</li>
+                        <li><strong>System:</strong> OS-level processes (not instrumented)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">5</span>
+                    <span class="step-title">Explore a Process</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click on any monitored process (look for technology icons)</li>
+                        <li>Observe the process detail page showing:
+                            <ul class="sub-steps">
+                                <li>Process name and technology type</li>
+                                <li>Running on which host</li>
+                                <li>Process group classification</li>
+                                <li>Resource consumption (CPU, memory)</li>
+                                <li>Services detected within this process</li>
+                            </ul>
+                        </li>
+                        <li>Review the metrics:
+                            <ul class="sub-steps">
+                                <li><strong>CPU:</strong> Process-specific CPU usage</li>
+                                <li><strong>Memory:</strong> Heap, non-heap (for JVM/.NET)</li>
+                                <li><strong>Threads:</strong> Thread count over time</li>
+                                <li><strong>GC:</strong> Garbage collection stats (JVM)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">6</span>
+                    <span class="step-title">Understanding Process Groups</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click on <strong>"Process groups"</strong> in the left navigation</li>
+                        <li>Process groups combine similar processes:
+                            <ul class="sub-steps">
+                                <li>Same technology and application</li>
+                                <li>Running across multiple hosts</li>
+                                <li>Provides aggregated view</li>
+                            </ul>
+                        </li>
+                        <li>Useful for:
+                            <ul class="sub-steps">
+                                <li>Monitoring clustered applications</li>
+                                <li>Comparing instances</li>
+                                <li>Setting alerts at group level</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="success">
+                    <strong>✅ Key Insight:</strong> Process Groups allow you to monitor multiple instances of 
+                    the same application as a single logical entity, even when spread across different hosts.
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>✏️ Exercise 2: Process Analysis</h4>
+                <p>Explore your processes and identify:</p>
+                <ul style="margin-left: 20px; margin-top: 15px;">
+                    <li>Which process is consuming the most CPU?</li>
+                    <li>How many Java/.NET processes are running?</li>
+                    <li>What is the memory footprint of your main application?</li>
+                    <li>Are there any web server processes detected?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Part 3: Service Discovery -->
+        <div class="slide">
+            <h2>Part 3: Service Discovery & Analysis</h2>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">7</span>
+                    <span class="step-title">Navigate to Services</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>In the left menu, click <strong>"Services"</strong></li>
+                        <li>You should see automatically discovered services</li>
+                        <li>If no services appear yet:
+                            <ul class="sub-steps">
+                                <li>Wait a few more minutes</li>
+                                <li>Ensure your application is receiving traffic</li>
+                                <li>Generate some requests to your application</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <strong>⚠️ Note:</strong> Services are discovered based on actual traffic. If your application 
+                    hasn't received any requests, no services will be detected yet. Make sure to send some test 
+                    requests to your application.
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">8</span>
+                    <span class="step-title">Explore Service Details</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click on any discovered service</li>
+                        <li>Review the service overview:
+                            <ul class="sub-steps">
+                                <li><strong>Service name:</strong> Auto-generated based on technology</li>
+                                <li><strong>Technology:</strong> Framework and language</li>
+                                <li><strong>Response time:</strong> Average, median, percentiles (P50, P90, P95)</li>
+                                <li><strong>Throughput:</strong> Requests per minute</li>
+                                <li><strong>Failure rate:</strong> Percentage of failed requests</li>
+                            </ul>
+                        </li>
+                        <li>Scroll down to view:
+                            <ul class="sub-steps">
+                                <li><strong>Top requests:</strong> Most frequent endpoints</li>
+                                <li><strong>Database calls:</strong> SQL queries and databases accessed</li>
+                                <li><strong>Dependencies:</strong> Services this service calls</li>
+                                <li><strong>Instances:</strong> Where the service is running</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">9</span>
+                    <span class="step-title">Analyze Service Flow</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>On the service detail page, click <strong>"Service flow"</strong> button</li>
+                        <li>This shows visual representation of:
+                            <ul class="sub-steps">
+                                <li>Incoming traffic sources</li>
+                                <li>This service in the middle</li>
+                                <li>Outgoing calls to databases, external services</li>
+                            </ul>
+                        </li>
+                        <li>Hover over connections to see:
+                            <ul class="sub-steps">
+                                <li>Request count</li>
+                                <li>Response time contribution</li>
+                                <li>Error rates</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h4>📊 Service Flow Benefits</h4>
+                    <p>Service flow helps you understand:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Where requests are coming from</li>
+                        <li>Which dependencies are causing delays</li>
+                        <li>Impact of database or external service calls</li>
+                        <li>Overall request path and bottlenecks</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>✏️ Exercise 3: Service Analysis</h4>
+                <p>For your primary service, determine:</p>
+                <ul style="margin-left: 20px; margin-top: 15px;">
+                    <li>What is the average response time?</li>
+                    <li>What is the P95 response time?</li>
+                    <li>Which endpoint is slowest?</li>
+                    <li>What databases does it connect to?</li>
+                    <li>Are there any external service dependencies?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Part 4: Smartscape -->
+        <div class="slide">
+            <h2>Part 4: Smartscape Topology</h2>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">10</span>
+                    <span class="step-title">Open Smartscape</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click on <strong>"Smartscape topology"</strong> in the left menu</li>
+                        <li>Or from any entity page, click the <strong>"Smartscape"</strong> button</li>
+                        <li>You'll see an interactive topology map of your environment</li>
+                    </ul>
+                </div>
+
+                <div class="screenshot-placeholder">
+                    📸 Screenshot: Smartscape topology showing hosts, processes, and services
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">11</span>
+                    <span class="step-title">Navigate Smartscape</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Use the vertical stack view (default):
+                            <ul class="sub-steps">
+                                <li>Top: Data centers, hosts</li>
+                                <li>Middle: Processes, process groups</li>
+                                <li>Bottom: Services</li>
+                            </ul>
+                        </li>
+                        <li>Click on any entity to:
+                            <ul class="sub-steps">
+                                <li>Highlight its dependencies</li>
+                                <li>See incoming and outgoing connections</li>
+                                <li>View quick metrics</li>
+                            </ul>
+                        </li>
+                        <li>Try different filters:
+                            <ul class="sub-steps">
+                                <li>Filter by technology</li>
+                                <li>Filter by tag</li>
+                                <li>Show/hide different entity types</li>
+                            </ul>
+                        </li>
+                        <li>Use the time travel feature:
+                            <ul class="sub-steps">
+                                <li>Select different time in the past</li>
+                                <li>See how topology changed over time</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="tip">
+                    <strong>💡 Pro Tip:</strong> Double-click on any entity in Smartscape to drill down and see 
+                    only its direct dependencies. This helps focus on specific parts of complex topologies.
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">12</span>
+                    <span class="step-title">Understand Dependencies</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Click on your main service in Smartscape</li>
+                        <li>Observe the highlighted connections showing:
+                            <ul class="sub-steps">
+                                <li><strong>Calls from:</strong> What's calling this service (upstream)</li>
+                                <li><strong>Calls to:</strong> What this service calls (downstream)</li>
+                            </ul>
+                        </li>
+                        <li>Follow the complete request path:
+                            <ul class="sub-steps">
+                                <li>From user/browser</li>
+                                <li>Through web server</li>
+                                <li>To application service</li>
+                                <li>To database</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="success">
+                    <strong>✅ Key Insight:</strong> Smartscape automatically builds and maintains this topology 
+                    in real-time. No configuration required—it learns from actual traffic patterns.
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>✏️ Exercise 4: Topology Exploration</h4>
+                <p>Using Smartscape, map out:</p>
+                <ul style="margin-left: 20px; margin-top: 15px;">
+                    <li>Draw your complete technology stack on paper</li>
+                    <li>Identify all services and their connections</li>
+                    <li>Note which service has the most dependencies</li>
+                    <li>Identify any external service calls</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Part 5: PurePath -->
+        <div class="slide">
+            <h2>Part 5: Distributed Tracing with PurePath</h2>
+
+            <div class="step-box">
+                <div>
+                    <span class="step-number">13</span>
+                    <span class="step-title">Access PurePath Traces</span>
+                </div>
+                
+                <div class="sub-steps">
+                    <ul>
+                        <li>Navigate to any service detail page</li>
+                        <li>Scroll down to 

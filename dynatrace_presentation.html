@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynatrace Observability Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #1496ff;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #6b2fb5;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #1496ff;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #1496ff;
+            margin: 25px 0 15px 0;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .content-box {
+            background: #f8f9fa;
+            border-left: 5px solid #1496ff;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(20, 150, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(20, 150, 255, 0.5);
+        }
+
+        .card h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        ul {
+            margin: 20px 0;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #1496ff;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .feature-box {
+            background: white;
+            border: 3px solid #1496ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-box:hover {
+            background: #1496ff;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .capability-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #6b2fb5;
+        }
+
+        .capability-box h3 {
+            margin-top: 0;
+        }
+
+        .ai-insight {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .anti-pattern {
+            background: #ffe8e8;
+            border-left: 5px solid #ff5252;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .best-practice {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .title-slide {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            color: white;
+            font-size: 4em;
+        }
+
+        .title-slide .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.6em;
+        }
+
+        code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-row > div {
+            padding: 20px;
+        }
+
+        .comparison-row > div:first-child {
+            background: #f5f5f5;
+            font-weight: bold;
+            color: #1496ff;
+        }
+
+        .integration-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title Slide -->
+        <div class="slide title-slide">
+            <h1>Dynatrace</h1>
+            <p class="subtitle">AI-Powered Full-Stack Observability Platform</p>
+        </div>
+
+        <!-- Platform Overview -->
+        <div class="slide">
+            <h2>What is Dynatrace?</h2>
+            <div class="content-box">
+                <p style="font-size: 1.2em; margin-bottom: 20px;">
+                    Dynatrace is an all-in-one observability platform that provides automatic and intelligent monitoring 
+                    of applications, infrastructure, and user experience with AI-powered analytics.
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>🤖 AI Engine (Davis)</h3>
+                    <p>Automatic root cause analysis, anomaly detection, and predictive insights</p>
+                </div>
+                <div class="card">
+                    <h3>🔄 OneAgent</h3>
+                    <p>Single agent for complete full-stack monitoring with auto-discovery</p>
+                </div>
+                <div class="card">
+                    <h3>📊 Smartscape</h3>
+                    <p>Real-time topology mapping of your entire technology stack</p>
+                </div>
+                <div class="card">
+                    <h3>⚡ Real-Time Data</h3>
+                    <p>Sub-second data ingestion and analysis at scale</p>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3 style="color: white; margin-top: 0;">Key Differentiators</h3>
+                <ul>
+                    <li>Automatic instrumentation - no code changes required</li>
+                    <li>AI-powered problem detection and root cause analysis</li>
+                    <li>Unified platform for apps, infrastructure, cloud, and user experience</li>
+                    <li>Real-time dependency mapping with Smartscape</li>
+                    <li>Infinite scalability with zero sampling</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- OneAgent Architecture -->
+        <div class="slide">
+            <h2>OneAgent: The Heart of Dynatrace</h2>
+            
+            <div class="content-box">
+                <h3>How OneAgent Works</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    OneAgent is a lightweight, intelligent agent that automatically discovers and monitors your entire stack 
+                    without requiring manual configuration or code changes.
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="feature-box">
+                    <h3>Auto-Discovery</h3>
+                    <p>Automatically detects all processes, services, and dependencies</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Zero Config</h3>
+                    <p>Starts monitoring immediately after deployment</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Low Overhead</h3>
+                    <p>< 1% CPU impact on production systems</p>
+                </div>
+            </div>
+
+            <div class="capability-box">
+                <h3>📱 Application Monitoring</h3>
+                <p><strong>Languages:</strong> Java, .NET, Node.js, PHP, Go, Python, and more</p>
+                <p><strong>Features:</strong> Code-level visibility, transaction tracing, exception tracking</p>
+            </div>
+
+            <div class="capability-box">
+                <h3>💻 Infrastructure Monitoring</h3>
+                <p><strong>Coverage:</strong> Hosts, containers, Kubernetes, cloud services</p>
+                <p><strong>Metrics:</strong> CPU, memory, disk, network, process-level details</p>
+            </div>
+
+            <div class="capability-box">
+                <h3>☁️ Cloud Platform Support</h3>
+                <p><strong>Platforms:</strong> AWS, Azure, GCP, VMware, OpenStack</p>
+                <p><strong>Services:</strong> Native integration with cloud-native services</p>
+            </div>
+
+            <div class="best-practice">
+                <strong>Best Practice:</strong> Deploy OneAgent on all hosts for complete visibility. 
+                It auto-updates and requires minimal maintenance.
+            </div>
+        </div>
+
+        <!-- Davis AI Engine -->
+        <div class="slide">
+            <h2>Davis AI: Intelligent Automation</h2>
+
+            <div class="ai-insight">
+                <h3>🧠 What is Davis?</h3>
+                <p style="font-size: 1.1em;">
+                    Davis is Dynatrace's AI causation engine that analyzes billions of dependencies in real-time 
+                    to automatically detect anomalies, identify root causes, and predict future issues.
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>🔍 Anomaly Detection</h3>
+                    <p><strong>Dynamic Baselines:</strong> Learns normal behavior automatically</p>
+                    <p><strong>Context-Aware:</strong> Considers time, day, seasonality</p>
+                    <p><strong>Zero Config:</strong> No threshold tuning required</p>
+                </div>
+                <div class="card">
+                    <h3>🎯 Root Cause Analysis</h3>
+                    <p><strong>Dependency Mapping:</strong> Traces issues across entire stack</p>
+                    <p><strong>Impact Assessment:</strong> Identifies affected users/services</p>
+                    <p><strong>Single Alert:</strong> One problem, not hundreds</p>
+                </div>
+                <div class="card">
+                    <h3>📈 Predictive Analytics</h3>
+                    <p><strong>Capacity Forecasting:</strong> Predicts resource exhaustion</p>
+                    <p><strong>Trend Analysis:</strong> Identifies degradation patterns</p>
+                    <p><strong>Proactive Alerts:</strong> Warns before issues occur</p>
+                </div>
+                <div class="card">
+                    <h3>💡 Smart Suggestions</h3>
+                    <p><strong>Remediation Advice:</strong> Actionable recommendations</p>
+                    <p><strong>Configuration Insights:</strong> Optimization suggestions</p>
+                    <p><strong>Best Practices:</strong> Security and performance tips</p>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3 style="color: white; margin-top: 0;">Davis Problem Detection Flow</h3>
+                <ul>
+                    <li><strong>Detection:</strong> Identifies anomalies across all monitored entities</li>
+                    <li><strong>Correlation:</strong> Groups related events into single problems</li>
+                    <li><strong>Root Cause:</strong> Analyzes dependencies to find the origin</li>
+                    <li><strong>Impact:</strong> Determines affected services and users</li>
+                    <li><strong>Notification:</strong> Sends context-rich alerts to relevant teams</li>
+                </ul>
+            </div>
+
+            <div class="best-practice">
+                <strong>Advantage:</strong> Davis reduces alert noise by 90%+ compared to traditional threshold-based monitoring.
+            </div>
+        </div>
+
+        <!-- Smartscape Topology -->
+        <div class="slide">
+            <h2>Smartscape: Real-Time Topology</h2>
+
+            <div class="content-box">
+                <h3>Automatic Dependency Mapping</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Smartscape provides a real-time, interactive map of your entire technology stack, 
+                    showing all relationships and dependencies as they change.
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>🗺️ Vertical Stack View</h3>
+                    <p>From user experience down through applications, processes, hosts, and infrastructure</p>
+                </div>
+                <div class="card">
+                    <h3>🔗 Horizontal Dependencies</h3>
+                    <p>Service-to-service communication, API calls, database connections</p>
+                </div>
+                <div class="card">
+                    <h3>⏱️ Time Travel</h3>
+                    <p>View topology at any point in time to understand changes</p>
+                </div>
+                <div class="card">
+                    <h3>🔎 Interactive Exploration</h3>
+                    <p>Click through entities to drill down into detailed metrics</p>
+                </div>
+            </div>
+
+            <div class="capability-box">
+                <h3>Entity Types Monitored</h3>
+                <div style="margin-top: 15px;">
+                    <span class="integration-badge">Applications</span>
+                    <span class="integration-badge">Services</span>
+                    <span class="integration-badge">Processes</span>
+                    <span class="integration-badge">Hosts</span>
+                    <span class="integration-badge">Containers</span>
+                    <span class="integration-badge">Databases</span>
+                    <span class="integration-badge">Network</span>
+                    <span class="integration-badge">Cloud Resources</span>
+                    <span class="integration-badge">Custom Devices</span>
+                </div>
+            </div>
+
+            <div class="best-practice">
+                <strong>Use Case:</strong> During incidents, Smartscape instantly shows you what changed, 
+                what's impacted, and how problems propagate through your system.
+            </div>
+        </div>
+
+        <!-- Real User Monitoring -->
+        <div class="slide">
+            <h2>Real User Monitoring (RUM)</h2>
+
+            <div class="content-box">
+                <p style="font-size: 1.15em; margin-bottom: 25px;">
+                    Dynatrace RUM captures actual user interactions to measure experience and identify performance issues 
+                    from the user's perspective.
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>⚡ Performance Metrics</h3>
+                    <p><strong>Core Web Vitals:</strong> LCP, FID, CLS</p>
+                    <p><strong>Load Times:</strong> Page, resource, AJAX</p>
+                    <p><strong>Apdex Scores:</strong> User satisfaction index</p>
+                </div>
+                <div class="card">
+                    <h3>👤 User Sessions</h3>
+                    <p><strong>Session Replay:</strong> Visual playback of user journeys</p>
+                    <p><strong>User Actions:</strong> Clicks, inputs, navigation</p>
+                    <p><strong>Conversion Tracking:</strong> Business goal completion</p>
+                </div>
+                <div class="card">
+                    <h3>🌍 Geographic Insights</h3>
+                    <p><strong>Location Analysis:</strong> Performance by region</p>
+                    <p><strong>ISP Detection:</strong> Network provider impact</p>
+                    <p><strong>Device Types:</strong> Mobile, desktop, tablet</p>
+                </div>
+                <div class="card">
+                    <h3>🐛 Error Detection</h3>
+                    <p><strong>JavaScript Errors:</strong> Frontend exceptions</p>
+                    <p><strong>API Failures:</strong> Backend request errors</p>
+                    <p><strong>Custom Events:</strong> Business-specific tracking</p>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3 style="color: white; margin-top: 0;">User Experience Score (UX Score)</h3>
+                <p style="font-size: 1.1em; line-height: 1.7;">
+                    Dynatrace calculates an automatic UX Score combining performance metrics, error rates, 
+                    and user behavior to give you a single number representing overall user satisfaction.
+                </p>
+            </div>
+
+            <div class="best-practice">
+                <strong>Integration:</strong> RUM data connects to backend traces, allowing you to see the 
+                complete journey from user click to database query.
+            </div>
+        </div>
+
+        <!-- Distributed Tracing -->
+        <div class="slide">
+            <h2>PurePath: Distributed Tracing</h2>
+
+            <div class="content-box">
+                <h3>End-to-End Transaction Visibility</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    PurePath captures every transaction in detail, tracing requests across microservices, 
+                    databases, and external services with complete context.
+                </p>
+            </div>
+
+            <div class="capability-box">
+                <h3>🔬 Code-Level Visibility</h3>
+                <ul>
+                    <li><strong>Method Hotspots:</strong> Identify slow methods and functions</li>
+                    <li><strong>SQL Statements:</strong> See exact queries executed</li>
+                    <li><strong>Exception Details:</strong> Stack traces and error context</li>
+                    <li><strong>Variable Capture:</strong> Request parameters and responses</li>
+                </ul>
+            </div>
+
+            <div class="capability-box">
+                <h3>🌐 Cross-Service Tracing</h3>
+                <ul>
+                    <li><strong>Microservices:</strong> Traces across all service boundaries</li>
+                    <li><strong>Message Queues:</strong> Kafka, RabbitMQ, SQS visibility</li>
+                    <li><strong>External APIs:</strong> Third-party service calls</li>
+                    <li><strong>Database Calls:</strong> Complete database interaction details</li>
+                </ul>
+            </div>
+
+            <div class="grid">
+                <div class="feature-box">
+                    <h3>100% Capture</h3>
+                    <p>No sampling - every request is traced</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Auto-Tagging</h3>
+                    <p>Metadata automatically attached</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Flame Graphs</h3>
+                    <p>Visual breakdown of time spent</p>
+                </div>
+            </div>
+
+            <div class="best-practice">
+                <strong>Performance Analysis:</strong> Use PurePath to identify the exact bottleneck in complex 
+                distributed transactions, from frontend to database.
+            </div>
+        </div>
+
+        <!-- Kubernetes Monitoring -->
+        <div class="slide">
+            <h2>Kubernetes & Container Monitoring</h2>
+
+            <div class="content-box">
+                <h3>Cloud-Native Observability</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Dynatrace provides deep insights into Kubernetes clusters, including workloads, nodes, 
+                    and the entire orchestration layer.
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>🎯 Cluster Health</h3>
+                    <p><strong>Control Plane:</strong> API server, scheduler, etcd</p>
+                    <p><strong>Nodes:</strong> Resource usage, capacity, conditions</p>
+                    <p><strong>Network:</strong> Service mesh visibility</p>
+                </div>
+                <div class="card">
+                    <h3>📦 Workload Monitoring</h3>
+                    <p><strong>Pods & Containers:</strong> Resource requests/limits</p>
+                    <p><strong>Deployments:</strong> Rollout tracking</p>
+                    <p><strong>StatefulSets:</strong> Persistent workload monitoring</p>
+                </div>
+                <div class="card">
+                    <h3>🏷️ Label-Based Grouping</h3>
+                    <p><strong>Auto-Discovery:</strong> K8s labels as tags</p>
+                    <p><strong>Management Zones:</strong> Organize by team/project</p>
+                    <p><strong>Alerting Rules:</strong> Label-based notifications</p>
+                </div>
+                <div class="card">
+                    <h3>🔄 Event Correlation</h3>
+                    <p><strong>K8s Events:</strong> Pod restarts, scaling</p>
+                    <p><strong>Problem Context:</strong> Link to infrastructure changes</p>
+                    <p><strong>Deployment Tracking:</strong> Performance before/after</p>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3 style="color: white; margin-top: 0;">Container vs. Process Monitoring</h3>
+                <p style="font-size: 1.05em; line-height: 1.7;">
+                    Dynatrace monitors both the container layer (resource limits, orchestration) and the processes 
+                    running inside containers, providing complete visibility from infrastructure to application code.
+                </p>
+            </div>
+
+            <div class="best-practice">
+                <strong>Deployment:</strong> Use the Dynatrace Operator for automatic OneAgent deployment 
+                and updates in Kubernetes clusters.
+            </div>
+        </div>
+
+        <!-- Log Management -->
+        <div class="slide">
+            <h2>Log Monitoring & Analytics</h2>
+
+            <div class="content-box">
+                <h3>Unified Log Management</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Dynatrace ingests, processes, and analyzes logs in context with metrics and traces, 
+                    providing AI-powered insights and anomaly detection.
+                </p>
+            </div>
+
+            <div class="capability-box">
+                <h3>📝 Log Ingestion</h3>
+                <ul>
+                    <li><strong>OneAgent:</strong> Automatic log collection from monitored processes</li>
+                    <li><strong>Log Forwarders:</strong> Fluentd, Logstash, CloudWatch integration</li>
+                    <li><strong>API Ingestion:</strong> Direct log streaming via REST API</li>
+                    <li><strong>Kubernetes:</strong> Container logs via DaemonSet</li>
+                </ul>
+            </div>
+
+            <div class="capability-box">
+                <h3>🔍 Log Processing</h3>
+                <ul>
+                    <li><strong>Pattern Detection:</strong> Automatic log pattern recognition</li>
+                    <li><strong>Parsing Rules:</strong> Extract structured data from logs</li>
+                    <li><strong>Attribute Extraction:</strong> Custom fields and dimensions</li>
+                    <li><strong>Log Enrichment:</strong> Add context from traces and metrics</li>
+                </ul>
+            </div>
+
+            <div class="grid">
+                <div class="feature-box">
+                    <h3>Davis Analysis</h3>
+                    <p>AI detects log anomalies and correlates with problems</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Contextual Search</h3>
+                    <p>Search logs within specific traces or timeframes</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Custom Metrics</h3>
+                    <p>Create metrics from log data patterns</p>
+                </div>
+            </div>
+
+            <div class="best-practice">
+                <strong>Best Practice:</strong> Use log analysis in conjunction with traces - when investigating 
+                a slow transaction, view its associated logs for complete context.
+            </div>
+        </div>
+
+        <!-- Service Level Objectives -->
+        <div class="slide">
+            <h2>Service Level Objectives (SLOs)</h2>
+
+            <div class="content-box">
+                <h3>Reliability Engineering</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Define, track, and alert on SLOs to ensure your services meet reliability targets 
+                    and error budgets.
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>🎯 SLO Definition</h3>
+                    <p><strong>Availability:</strong> % of successful requests</p>
+                    <p><strong>Performance:</strong> Response time percentiles</p>
+                    <p><strong>Custom:</strong> Business-specific metrics</p>
+                </div>
+                <div class="card">
+                    <h3>💰 Error Budgets</h3>
+                    <p><strong>Calculation:</strong> Automatic budget tracking</p>
+                    <p><strong>Burn Rate:</strong> How fast budget is consumed</p>
+                    <p><strong>Alerts:</strong> Warn when budget is exhausted</p>
+                </div>
+                <div class="card">
+                    <h3>📊 Multi-Window Analysis</h3>
+                    <p><strong>Time Windows:</strong> Daily, weekly, monthly tracking</p>
+                    <p><strong>Trend Analysis:</strong> Historical performance</p>
+                    <p><strong>Forecasting:</strong> Predict SLO violations</p>
+                </div>
+                <div class="card">
+                    <h3>🔔 Smart Alerting</h3>
+                    <p><strong>Burn Rate Alerts:</strong> Fast/slow burn detection</p>
+                    <p><strong>Warning Thresholds:</strong> Proactive notifications</p>
+                    <p><strong>Multi-Window:</strong> Prevent false alarms</p>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3 style="color: white; margin-top: 0;">SLO Best Practices</h3>
+                <ul>
+                    <li>Start with availability SLOs (99%, 99.9%, 99.95%)</li>
+                    <li>Add latency SLOs based on user experience requirements</li>
+                    <li>Use error budgets to balance features vs. reliability</li>
+                    <li>Create dashboards showing SLO status for all critical services</li>
+                    <li>Review and adjust SLOs quarterly based on business needs</li>
+                </ul>
+            </div>
+
+            <div class="best-practice">
+                <strong>Integration:</strong> SLOs work seamlessly with Davis AI - problems automatically 
+                include SLO impact analysis.
+            </div>
+        </div>
+
+        <!-- Management Zones -->
+        <div class="slide">
+            <h2>Management Zones</h2>
+
+            <div class="content-box">
+                <h3>Logical Grouping & Access Control</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Management Zones segment your monitoring environment into logical groups based on teams, 
+                    applications, or environments, with role-based access control.
+                </p>
+            </div>
+
+            <div class="capability-box">
+                <h3>🏗️ Zone Definition</h3>
+                <ul>
+                    <li><strong>Tag-Based:</strong> Group entities by custom tags</li>
+                    <li><strong>Name Patterns:</strong> Use wildcards for auto-grouping</li>
+                    <li><strong>Metadata Rules:</strong> K8s labels, cloud tags, properties</li>
+                    <li><strong>Multi-Criteria:</strong> Combine multiple conditions</li>
+                </ul>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>👥 

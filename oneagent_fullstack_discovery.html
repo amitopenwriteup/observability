@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneAgent Full-Stack Discovery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #1496ff;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #6b2fb5;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #1496ff;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #1496ff;
+            margin: 25px 0 15px 0;
+        }
+
+        h4 {
+            font-size: 1.3em;
+            color: #6b2fb5;
+            margin: 20px 0 10px 0;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .content-box {
+            background: #f8f9fa;
+            border-left: 5px solid #1496ff;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(20, 150, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(20, 150, 255, 0.5);
+        }
+
+        .card h3, .card h4 {
+            color: white;
+            margin-top: 0;
+        }
+
+        ul {
+            margin: 20px 0;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #1496ff;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .warning {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .success {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .tech-box {
+            background: white;
+            border: 3px solid #1496ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .tech-box h4 {
+            margin-top: 0;
+        }
+
+        .title-slide {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            color: white;
+            font-size: 4em;
+        }
+
+        .title-slide .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.6em;
+        }
+
+        code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        .layer-diagram {
+            background: white;
+            border: 2px solid #1496ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .layer {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .layer:after {
+            content: "↓";
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2em;
+            color: #1496ff;
+        }
+
+        .layer:last-child:after {
+            content: "";
+        }
+
+        .discovery-flow {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .flow-number {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .flow-content {
+            flex-grow: 1;
+        }
+
+        .flow-content h4 {
+            margin-top: 0;
+            color: #6b2fb5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 0.9em;
+        }
+
+        .architecture-diagram {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .arch-layer {
+            background: white;
+            border: 2px solid #1496ff;
+            padding: 20px;
+            margin: 15px auto;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .sub-list {
+            margin-left: 40px;
+            margin-top: 10px;
+        }
+
+        .sub-list li:before {
+            content: "→";
+            color: #6b2fb5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title Slide -->
+        <div class="slide title-slide">
+            <h1>OneAgent</h1>
+            <p class="subtitle">Full-Stack Infrastructure Discovery & Monitoring</p>
+            <p style="font-size: 1.2em; margin-top: 20px;">Automatic, Intelligent, Zero-Configuration</p>
+        </div>
+
+        <!-- Overview -->
+        <div class="slide">
+            <h2>OneAgent Overview</h2>
+            
+            <div class="content-box">
+                <p style="font-size: 1.2em; margin-bottom: 20px;">
+                    OneAgent is Dynatrace's intelligent monitoring agent that automatically discovers, instruments, 
+                    and monitors your entire technology stack—from infrastructure to applications—with a single deployment.
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>🎯 Zero Configuration</h3>
+                    <p>No manual setup or code changes required. Deploy and start monitoring instantly.</p>
+                </div>
+                <div class="card">
+                    <h3>🔍 Auto-Discovery</h3>
+                    <p>Automatically detects all processes, services, applications, and dependencies.</p>
+                </div>
+                <div class="card">
+                    <h3>📊 Full-Stack Visibility</h3>
+                    <p>Monitors from user experience down to infrastructure in a single agent.</p>
+                </div>
+                <div class="card">
+                    <h3>⚡ Low Overhead</h3>
+                    <p>Typical CPU impact < 1%, memory footprint 100-200 MB.</p>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3 style="color: white; margin-top: 0;">Key Capabilities</h3>
+                <ul>
+                    <li><strong>Automatic Instrumentation:</strong> No code changes or configuration files needed</li>
+                    <li><strong>Continuous Discovery:</strong> Detects new processes and services as they start</li>
+                    <li><strong>Deep Code Visibility:</strong> Method-level tracing without source code access</li>
+                    <li><strong>Dependency Mapping:</strong> Automatically builds complete service topology</li>
+                    <li><strong>Self-Updating:</strong> Automatic updates with zero downtime</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Discovery Layers -->
+        <div class="slide">
+            <h2>Full-Stack Discovery Layers</h2>
+
+            <div class="content-box">
+                <h3>What OneAgent Discovers</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    OneAgent monitors your entire technology stack across multiple layers, from user experience 
+                    at the top to infrastructure at the bottom.
+                </p>
+            </div>
+
+            <div class="layer-diagram">
+                <div class="layer">
+                    <h4 style="color: white; margin: 0 0 10px 0;">Layer 1: User Experience</h4>
+                    <p style="margin: 0;">Real user sessions, page loads, user actions, synthetic monitoring</p>
+                </div>
+                <div class="layer">
+                    <h4 style="color: white; margin: 0 0 10px 0;">Layer 2: Applications</h4>
+                    <p style="margin: 0;">Web servers, application servers, frontend frameworks</p>
+                </div>
+                <div class="layer">
+                    <h4 style="color: white; margin: 0 0 10px 0;">Layer 3: Services</h4>
+                    <p style="margin: 0;">Microservices, APIs, backend services, service-to-service calls</p>
+                </div>
+                <div class="layer">
+                    <h4 style="color: white; margin: 0 0 10px 0;">Layer 4: Processes</h4>
+                    <p style="margin: 0;">Running processes, JVMs, CLRs, Node.js instances, containers</p>
+                </div>
+                <div class="layer">
+                    <h4 style="color: white; margin: 0 0 10px 0;">Layer 5: Infrastructure</h4>
+                    <p style="margin: 0;">Hosts, VMs, containers, CPU, memory, disk, network</p>
+                </div>
+                <div class="layer" style="margin-bottom: 0;">
+                    <h4 style="color: white; margin: 0 0 10px 0;">Layer 6: Cloud & Orchestration</h4>
+                    <p style="margin: 0;">Kubernetes, Docker, AWS, Azure, GCP resources</p>
+                </div>
+            </div>
+
+            <div class="success">
+                <strong>🎯 Key Benefit:</strong> Single agent deployment monitors all these layers simultaneously, 
+                with automatic correlation between them. No need for multiple monitoring tools.
+            </div>
+        </div>
+
+        <!-- How Discovery Works -->
+        <div class="slide">
+            <h2>How Auto-Discovery Works</h2>
+
+            <div class="discovery-flow">
+                <h3 style="color: #1496ff; margin-bottom: 25px;">Discovery Process Flow</h3>
+
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-content">
+                        <h4>OneAgent Installation</h4>
+                        <p>OneAgent is installed on the host operating system with a single command. 
+                        It immediately starts monitoring the host-level metrics.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-content">
+                        <h4>Process Detection</h4>
+                        <p>OneAgent scans for all running processes on the host. It identifies process types 
+                        (Java, .NET, Node.js, Apache, NGINX, databases, etc.) and begins monitoring them.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-content">
+                        <h4>Automatic Instrumentation</h4>
+                        <p>For supported technologies, OneAgent automatically instruments the application code 
+                        by injecting monitoring hooks at runtime—no restart or code changes needed.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-content">
+                        <h4>Service Discovery</h4>
+                        <p>OneAgent detects services by analyzing application communication patterns. It identifies 
+                        service entry points (REST endpoints, message queues, databases) and creates service entities.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">5</div>
+                    <div class="flow-content">
+                        <h4>Dependency Mapping</h4>
+                        <p>As requests flow through the system, OneAgent traces every call and builds a real-time 
+                        dependency map showing how services, processes, and infrastructure components interact.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">6</div>
+                    <div class="flow-content">
+                        <h4>Continuous Monitoring</h4>
+                        <p>OneAgent continuously monitors for changes: new processes starting, services being deployed, 
+                        configuration changes, and updates the topology automatically.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>⏱️ Discovery Timing</h4>
+                <p><strong>Host Detection:</strong> Immediate (< 1 minute)</p>
+                <p><strong>Process Detection:</strong> 1-3 minutes after process starts</p>
+                <p><strong>Service Discovery:</strong> 5-10 minutes (requires traffic)</p>
+                <p><strong>Full Topology:</strong> 15-30 minutes with active traffic</p>
+            </div>
+        </div>
+
+        <!-- Infrastructure Discovery -->
+        <div class="slide">
+            <h2>Infrastructure Discovery</h2>
+
+            <div class="content-box">
+                <h3>Host-Level Monitoring</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    OneAgent automatically collects comprehensive infrastructure metrics from the moment it's installed.
+                </p>
+            </div>
+
+            <div class="tech-box">
+                <h4>🖥️ Host Metrics Collected</h4>
+                <div style="margin-top: 15px;">
+                    <span class="metric-badge">CPU Usage</span>
+                    <span class="metric-badge">Memory Usage</span>
+                    <span class="metric-badge">Disk I/O</span>
+                    <span class="metric-badge">Network Traffic</span>
+                    <span class="metric-badge">Swap Usage</span>
+                    <span class="metric-badge">Load Average</span>
+                    <span class="metric-badge">Open Files</span>
+                    <span class="metric-badge">TCP Connections</span>
+                    <span class="metric-badge">Disk Space</span>
+                    <span class="metric-badge">System Processes</span>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h4>📍 Host Properties</h4>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>Hostname & IP addresses</li>
+                        <li>Operating system & version</li>
+                        <li>CPU architecture & cores</li>
+                        <li>Total memory & disk</li>
+                        <li>Cloud provider metadata</li>
+                        <li>Kubernetes node info</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>🏷️ Auto-Tagging</h4>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>Environment (dev/prod)</li>
+                        <li>Cloud region & zone</li>
+                        <li>Kubernetes namespace</li>
+                        <li>Custom metadata tags</li>
+                        <li>AWS/Azure/GCP tags</li>
+                        <li>Container labels</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>🐳 Container Discovery</h4>
+                <p>OneAgent automatically detects containerized environments:</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>Docker:</strong> All containers on the host, resource limits, image info</li>
+                    <li><strong>Kubernetes:</strong> Pods, containers, deployments, services, namespaces</li>
+                    <li><strong>Container Orchestration:</strong> Auto-tags with K8s labels and annotations</li>
+                    <li><strong>Resource Monitoring:</strong> Per-container CPU, memory, network metrics</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Process Discovery -->
+        <div class="slide">
+            <h2>Process-Level Discovery</h2>
+
+            <div class="content-box">
+                <h3>Automatic Process Detection</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    OneAgent identifies all running processes and classifies them by technology, 
+                    automatically determining which ones to instrument for deep monitoring.
+                </p>
+            </div>
+
+            <div class="tech-box">
+                <h4>🔍 Process Discovery Includes</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Detected Information</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Process Identity</strong></td>
+                            <td>PID, process name, command line, parent process</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Technology</strong></td>
+                            <td>Language/runtime (Java, .NET, Node.js, Python, PHP, Go)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Version</strong></td>
+                            <td>Application server version, runtime version, framework version</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Resources</strong></td>
+                            <td>CPU usage, memory (heap/non-heap), threads, file descriptors</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Network</strong></td>
+                            <td>Listening ports, established connections, network endpoints</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Container</strong></td>
+                            <td>Container ID, image, pod name, Kubernetes metadata</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h4>☕ Java/JVM</h4>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>JVM version & vendor</li>
+                        <li>Heap memory (used/max)</li>
+                        <li>Garbage collection stats</li>
+                        <li>Thread pools</li>
+                        <li>Class loading</li>
+                        <li>JAR file detection</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>🔷 .NET/CLR</h4>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>.NET Framework/Core version</li>
+                        <li>CLR memory management</li>
+                        <li>AppDomains</li>
+                        <li>Assembly information</li>
+                        <li>IIS application pools</li>
+                        <li>ASP.NET metrics</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>🟢 Node.js</h4>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>Node.js version</li>
+                        <li>V8 engine metrics</li>
+                        <li>Event loop performance</li>
+                        <li>npm package detection</li>
+                        <li>Async operation tracking</li>
+                        <li>Memory leak detection</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>🐍 Python</h4>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>Python version</li>
+                        <li>Framework detection (Django, Flask)</li>
+                        <li>Memory usage</li>
+                        <li>Package dependencies</li>
+                        <li>WSGI/ASGI servers</li>
+                        <li>Request processing</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="success">
+                <strong>🎯 Smart Detection:</strong> OneAgent knows which processes to deeply instrument based on 
+                technology type and automatically ignores system processes that don't need application monitoring.
+            </div>
+        </div>
+
+        <!-- Service Discovery -->
+        <div class="slide">
+            <h2>Service Discovery & Mapping</h2>
+
+            <div class="content-box">
+                <h3>Automatic Service Detection</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    OneAgent automatically identifies services by analyzing entry points and communication patterns. 
+                    No service definitions or configuration files required.
+                </p>
+            </div>
+
+            <div class="tech-box">
+                <h4>🎯 How Services Are Discovered</h4>
+                <ul>
+                    <li><strong>Entry Point Detection:</strong> Identifies HTTP endpoints, REST APIs, SOAP services, message queue listeners</li>
+                    <li><strong>Traffic Analysis:</strong> Observes actual requests to determine service boundaries</li>
+                    <li><strong>Technology Recognition:</strong> Detects service frameworks (Spring Boot, Express.js, ASP.NET Core)</li>
+                    <li><strong>Naming Intelligence:</strong> Auto-generates meaningful service names based on technology patterns</li>
+                    <li><strong>Grouping:</strong> Combines related endpoints into logical services</li>
+                </ul>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h4>🌐 Web Services</h4>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>REST APIs</li>
+                        <li>GraphQL endpoints</li>
+                        <li>SOAP/XML services</li>
+                        <li>WebSocket connections</li>
+                        <li>gRPC services</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>💬 Messaging</h4>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>Kafka producers/consumers</li>
+                        <li>RabbitMQ queues</li>
+                        <li>AWS SQS/SNS</li>
+                        <li>Azure Service Bus</li>
+                        <li>IBM MQ</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>🗄️ Database Services</h4>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>MySQL/PostgreSQL</li>
+                        <li>MongoDB</li>
+                        <li>Oracle/SQL Server</li>
+                        <li>Redis/Memcached</li>
+                        <li>Cassandra/DynamoDB</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>☁️ Cloud Services</h4>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>AWS S3, Lambda</li>
+                        <li>Azure Functions</li>
+                        <li>Google Cloud services</li>
+                        <li>Third-party APIs</li>
+                        <li>External services</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>📊 Service Metrics Auto-Collected</h4>
+                <div style="margin-top: 15px;">
+                    <span class="metric-badge">Response Time</span>
+                    <span class="metric-badge">Throughput (req/sec)</span>
+                    <span class="metric-badge">Error Rate</span>
+                    <span class="metric-badge">Failure Rate</span>
+                    <span class="metric-badge">CPU Usage</span>
+                    <span class="metric-badge">Memory Usage</span>
+                    <span class="metric-badge">Database Calls</span>
+                    <span class="metric-badge">External Calls</span>
+                    <span class="metric-badge">Queue Time</span>
+                    <span class="metric-badge">Instance Count</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Discovery -->
+        <div class="slide">
+            <h2>Application & User Experience Discovery</h2>
+
+            <div class="content-box">
+                <h3>Frontend Application Monitoring</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    OneAgent can automatically inject Real User Monitoring (RUM) into web applications, 
+                    or you can manually add the JavaScript snippet for full user experience visibility.
+                </p>
+            </div>
+
+            <div class="tech-box">
+                <h4>🖥️ Web Application Discovery</h4>
+                <ul>
+                    <li><strong>Auto-Injection:</strong> For supported web servers (Apache, NGINX, IIS), OneAgent can automatically inject RUM JavaScript</li>
+                    <li><strong>Framework Detection:</strong> Identifies React, Angular, Vue.js, jQuery applications</li>
+                    <li><strong>SPA Support:</strong> Full support for single-page applications with route change tracking</li>
+                    <li><strong>User Actions:</strong> Automatically captures clicks, form submissions, AJAX calls</li>
+                    <li><strong>Performance:</strong> Core Web Vitals, page load times, resource timing</li>
+                

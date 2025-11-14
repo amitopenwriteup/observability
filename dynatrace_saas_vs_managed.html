@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynatrace: SaaS vs Managed</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #1496ff;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #6b2fb5;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #1496ff;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #1496ff;
+            margin: 25px 0 15px 0;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .content-box {
+            background: #f8f9fa;
+            border-left: 5px solid #1496ff;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(20, 150, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(20, 150, 255, 0.5);
+        }
+
+        .card h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .saas-card {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+        }
+
+        .saas-card:hover {
+            box-shadow: 0 15px 40px rgba(76, 175, 80, 0.5);
+        }
+
+        .managed-card {
+            background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+            box-shadow: 0 10px 30px rgba(255, 152, 0, 0.3);
+        }
+
+        .managed-card:hover {
+            box-shadow: 0 15px 40px rgba(255, 152, 0, 0.5);
+        }
+
+        ul {
+            margin: 20px 0;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #1496ff;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            padding: 20px;
+            text-align: left;
+            font-size: 1.2em;
+        }
+
+        .comparison-table td {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 1.05em;
+        }
+
+        .comparison-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .comparison-table td:first-child {
+            font-weight: 600;
+            color: #6b2fb5;
+            width: 30%;
+        }
+
+        .comparison-table .saas-col {
+            background: #e8f5e9;
+        }
+
+        .comparison-table .managed-col {
+            background: #fff3e0;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .pros {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        .pros h3 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+
+        .cons {
+            background: #ffe8e8;
+            border-left: 5px solid #ff5252;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        .cons h3 {
+            color: #c62828;
+            margin-top: 0;
+        }
+
+        .best-practice {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .warning {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .title-slide {
+            background: linear-gradient(135deg, #1496ff 0%, #6b2fb5 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            color: white;
+            font-size: 4em;
+        }
+
+        .title-slide .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.6em;
+        }
+
+        code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        .decision-flow {
+            background: white;
+            border: 3px solid #1496ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .decision-flow h4 {
+            color: #6b2fb5;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .architecture-box {
+            background: white;
+            border: 2px solid #1496ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .feature-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .badge-saas {
+            background: #4caf50;
+            color: white;
+        }
+
+        .badge-managed {
+            background: #ff9800;
+            color: white;
+        }
+
+        .badge-both {
+            background: #2196f3;
+            color: white;
+        }
+
+        .checkmark {
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .crossmark {
+            color: #ff5252;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .partial {
+            color: #ff9800;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title Slide -->
+        <div class="slide title-slide">
+            <h1>Dynatrace Deployment Options</h1>
+            <p class="subtitle">SaaS vs Managed: Choosing the Right Architecture</p>
+        </div>
+
+        <!-- Overview -->
+        <div class="slide">
+            <h2>Deployment Options Overview</h2>
+            
+            <div class="content-box">
+                <p style="font-size: 1.2em; margin-bottom: 20px;">
+                    Dynatrace offers two primary deployment models, each designed for different organizational 
+                    needs, compliance requirements, and infrastructure preferences.
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card saas-card">
+                    <h3>☁️ Dynatrace SaaS</h3>
+                    <p style="margin-bottom: 15px;">Cloud-hosted, fully managed platform</p>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li>Hosted by Dynatrace</li>
+                        <li>Zero infrastructure management</li>
+                        <li>Automatic updates</li>
+                        <li>Global availability</li>
+                        <li>Multi-tenant architecture</li>
+                    </ul>
+                </div>
+                <div class="card managed-card">
+                    <h3>🏢 Dynatrace Managed</h3>
+                    <p style="margin-bottom: 15px;">Self-hosted, customer-controlled deployment</p>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li>Deploy on your infrastructure</li>
+                        <li>Full data control</li>
+                        <li>Customizable updates</li>
+                        <li>Air-gapped support</li>
+                        <li>Single or multi-tenant</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3 style="color: white; margin-top: 0;">Key Decision Factors</h3>
+                <ul>
+                    <li><strong>Data Residency:</strong> Where your monitoring data must be stored</li>
+                    <li><strong>Compliance:</strong> Regulatory requirements (GDPR, HIPAA, PCI-DSS)</li>
+                    <li><strong>Network Topology:</strong> Internet connectivity and firewall policies</li>
+                    <li><strong>Operational Overhead:</strong> Resources available for infrastructure management</li>
+                    <li><strong>Update Control:</strong> Need for controlled update schedules</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SaaS Deep Dive -->
+        <div class="slide">
+            <h2>Dynatrace SaaS: Cloud-Native Observability</h2>
+
+            <div class="content-box">
+                <h3>Architecture Overview</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Dynatrace SaaS is a fully managed, multi-tenant cloud service where Dynatrace handles 
+                    all infrastructure, updates, scaling, and availability.
+                </p>
+            </div>
+
+            <div class="architecture-box">
+                <h3>🏗️ Components</h3>
+                <ul>
+                    <li><strong>OneAgent:</strong> Deployed on your hosts/containers (customer side)</li>
+                    <li><strong>ActiveGate:</strong> Optional proxy for restricted environments (customer side)</li>
+                    <li><strong>Dynatrace Cluster:</strong> Backend processing and storage (Dynatrace managed)</li>
+                    <li><strong>UI/API:</strong> Web interface and REST APIs (Dynatrace managed)</li>
+                </ul>
+            </div>
+
+            <div class="grid">
+                <div class="card saas-card">
+                    <h3>✅ Advantages</h3>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li>No infrastructure to manage</li>
+                        <li>Instant availability</li>
+                        <li>Always latest features</li>
+                        <li>Automatic scaling</li>
+                        <li>99.9% SLA guarantee</li>
+                        <li>Global CDN for fast access</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📍 Regional Availability</h3>
+                    <p style="margin-bottom: 10px;">Choose your region:</p>
+                    <ul style="margin-left: 20px;">
+                        <li>North America (US)</li>
+                        <li>Europe (EU)</li>
+                        <li>Asia Pacific (APAC)</li>
+                        <li>Middle East (UAE)</li>
+                        <li>Australia (AUS)</li>
+                        <li>Government Cloud (US Gov)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>🔐 Security & Compliance</h3>
+                <ul>
+                    <li><strong>Certifications:</strong> SOC 2 Type II, ISO 27001, PCI-DSS, HIPAA-ready</li>
+                    <li><strong>Data Encryption:</strong> TLS 1.2+ in transit, AES-256 at rest</li>
+                    <li><strong>Regional Isolation:</strong> Data stays within chosen region</li>
+                    <li><strong>Access Control:</strong> SSO, MFA, RBAC, API tokens</li>
+                </ul>
+            </div>
+
+            <div class="best-practice">
+                <strong>Best For:</strong> Organizations wanting immediate time-to-value, minimal operational 
+                overhead, and automatic updates without maintenance windows.
+            </div>
+        </div>
+
+        <!-- Managed Deep Dive -->
+        <div class="slide">
+            <h2>Dynatrace Managed: Self-Hosted Control</h2>
+
+            <div class="content-box">
+                <h3>Architecture Overview</h3>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Dynatrace Managed is a self-hosted deployment where you install and operate the Dynatrace 
+                    cluster on your own infrastructure with full control over data and updates.
+                </p>
+            </div>
+
+            <div class="architecture-box">
+                <h3>🏗️ Components (All Customer Managed)</h3>
+                <ul>
+                    <li><strong>OneAgent:</strong> Deployed on monitored hosts/containers</li>
+                    <li><strong>ActiveGate:</strong> Proxy and data processing layer</li>
+                    <li><strong>Cluster Nodes:</strong> Backend processing (minimum 3 nodes for HA)</li>
+                    <li><strong>Cassandra Database:</strong> Time-series data storage</li>
+                    <li><strong>Elasticsearch:</strong> Log and event storage</li>
+                    <li><strong>Load Balancer:</strong> Traffic distribution across cluster nodes</li>
+                </ul>
+            </div>
+
+            <div class="grid">
+                <div class="card managed-card">
+                    <h3>✅ Advantages</h3>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li>Complete data sovereignty</li>
+                        <li>Air-gapped deployment support</li>
+                        <li>Controlled update schedule</li>
+                        <li>Custom retention policies</li>
+                        <li>Network isolation</li>
+                        <li>On-premises deployment</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📊 Infrastructure Requirements</h3>
+                    <p style="margin-bottom: 10px;"><strong>Minimum (Small):</strong></p>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>3 nodes</li>
+                        <li>16 vCPU, 64 GB RAM each</li>
+                        <li>500 GB SSD storage</li>
+                        <li>~10,000 hosts capacity</li>
+                    </ul>
+                    <p style="margin: 10px 0;"><strong>Large Deployment:</strong></p>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>6+ nodes</li>
+                        <li>32+ vCPU, 128+ GB RAM</li>
+                        <li>1+ TB SSD per node</li>
+                        <li>50,000+ hosts capacity</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="warning">
+                <h3>⚠️ Operational Responsibilities</h3>
+                <ul>
+                    <li><strong>Infrastructure:</strong> Provision and maintain servers, storage, networking</li>
+                    <li><strong>Updates:</strong> Plan and execute Dynatrace version upgrades</li>
+                    <li><strong>Backups:</strong> Implement backup and disaster recovery procedures</li>
+                    <li><strong>Monitoring:</strong> Monitor the Dynatrace cluster itself</li>
+                    <li><strong>Scaling:</strong> Add nodes as monitoring needs grow</li>
+                    <li><strong>Security:</strong> Patch OS, manage certificates, harden infrastructure</li>
+                </ul>
+            </div>
+
+            <div class="best-practice">
+                <strong>Best For:</strong> Highly regulated industries, air-gapped environments, strict data 
+                residency requirements, or organizations with existing infrastructure and operations teams.
+            </div>
+        </div>
+
+        <!-- Detailed Comparison -->
+        <div class="slide">
+            <h2>Feature Comparison</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>SaaS</th>
+                        <th>Managed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Deployment Time</td>
+                        <td class="saas-col"><span class="checkmark">✓</span> Minutes (instant)</td>
+                        <td class="managed-col"><span class="partial">◐</span> Days to weeks</td>
+                    </tr>
+                    <tr>
+                        <td>Infrastructure Management</td>
+                        <td class="saas-col"><span class="checkmark">✓</span> Fully managed by Dynatrace</td>
+                        <td class="managed-col"><span class="crossmark">✗</span> Customer responsibility</td>
+                    </tr>
+                    <tr>
+                        <td>Automatic Updates</td>
+                        <td class="saas-col"><span class="checkmark">✓</span> Weekly/biweekly (automatic)</td>
+                        <td class="managed-col"><span class="partial">◐</span> Quarterly (manual)</td>
+                    </tr>
+                    <tr>
+                        <td>Latest Features</td>
+                        <td class="saas-col"><span class="checkmark">✓</span> Immediate access</td>
+                        <td class="managed-col"><span class="partial">◐</span> 1-2 releases behind</td>
+                    </tr>
+                    <tr>
+                        <td>Data Residency</td>
+                        <td class="saas-col"><span class="partial">◐</span> Regional (6 regions)</td>
+                        <td class="managed-col"><span class="checkmark">✓</span> Full control</td>
+                    </tr>
+                    <tr>
+                        <td>Air-Gapped Support</td>
+                        <td class="saas-col"><span class="crossmark">✗</span> Not supported</td>
+                        <td class="managed-col"><span class="checkmark">✓</span> Fully supported</td>
+                    </tr>
+                    <tr>
+                        <td>Scalability</td>
+                        <td class="saas-col"><span class="checkmark">✓</span> Automatic/unlimited</td>
+                        <td class="managed-col"><span class="partial">◐</span> Manual (add nodes)</td>
+                    </tr>
+                    <tr>
+                        <td>HA/DR</td>
+                        <td class="saas-col"><span class="checkmark">✓</span> Built-in (99.9% SLA)</td>
+                        <td class="managed-col"><span class="partial">◐</span> Customer configured</td>
+                    </tr>
+                    <tr>
+                        <td>Backup Management</td>
+                        <td class="saas-col"><span class="checkmark">✓</span> Automatic</td>
+                        <td class="managed-col"><span class="crossmark">✗</span> Customer responsibility</td>
+                    </tr>
+                    <tr>
+                        <td>Custom Retention</td>
+                        <td class="saas-col"><span class="partial">◐</span> Limited options</td>
+                        <td class="managed-col"><span class="checkmark">✓</span> Fully customizable</td>
+                    </tr>
+                    <tr>
+                        <td>Network Requirements</td>
+                        <td class="saas-col"><span class="partial">◐</span> Internet connectivity</td>
+                        <td class="managed-col"><span class="checkmark">✓</span> Isolated network OK</td>
+                    </tr>
+                    <tr>
+                        <td>Multi-Tenancy</td>
+                        <td class="saas-col"><span class="checkmark">✓</span> Environment-based</td>
+                        <td class="managed-col"><span class="checkmark">✓</span> Full tenant isolation</td>
+                    </tr>
+                    <tr>
+                        <td>Operational Overhead</td>
+                        <td class="saas-col"><span class="checkmark">✓</span> Minimal (agents only)</td>
+                        <td class="managed-col"><span class="crossmark">✗</span> Significant (full stack)</td>
+                    </tr>
+                    <tr>
+                        <td>Licensing Model</td>
+                        <td class="saas-col"><span class="checkmark">✓</span> Consumption-based</td>
+                        <td class="managed-col"><span class="checkmark">✓</span> Consumption-based</td>
+                    </tr>
+                    <tr>
+                        <td>Support</td>
+                        <td class="saas-col"><span class="checkmark">✓</span> Platform + application</td>
+                        <td class="managed-col"><span class="partial">◐</span> Application only</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Network Architecture -->
+        <div class="slide">
+            <h2>Network Architecture & Connectivity</h2>
+
+            <div class="grid">
+                <div class="card saas-card">
+                    <h3>☁️ SaaS Network Flow</h3>
+                    <p style="margin-bottom: 15px; font-size: 1.05em;">
+                        <strong>Standard Deployment:</strong>
+                    </p>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>OneAgent → Internet → Dynatrace Cloud</li>
+                        <li>HTTPS on port 443</li>
+                        <li>Outbound only (no inbound)</li>
+                        <li>~1 KB/min per host</li>
+                    </ul>
+                    <p style="margin: 15px 0; font-size: 1.05em;">
+                        <strong>With ActiveGate:</strong>
+                    </p>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>OneAgent → ActiveGate (internal)</li>
+                        <li>ActiveGate → Dynatrace Cloud</li>
+                        <li>Reduces firewall rules</li>
+                        <li>Local data aggregation</li>
+                    </ul>
+                </div>
+
+                <div class="card managed-card">
+                    <h3>🏢 Managed Network Flow</h3>
+                    <p style="margin-bottom: 15px; font-size: 1.05em;">
+                        <strong>Typical Deployment:</strong>
+                    </p>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>OneAgent → Cluster (internal)</li>
+                        <li>All traffic internal network</li>
+                        <li>No internet requirement</li>
+                        <li>Fully isolated operation</li>
+                    </ul>
+                    <p style="margin: 15px 0; font-size: 1.05em;">
+                        <strong>Update Channel (Optional):</strong>
+                    </p>
+                    <ul style="margin-left: 20px; font-size: 0.95em;">
+                        <li>Cluster → Dynatrace update server</li>
+                        <li>HTTPS on port 443</li>
+                        <li>Can be disconnected</li>
+                        <li>Manual updates supported</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>🔒 Firewall Requirements - SaaS</h3>
+                <ul>
+                    <li><strong>OneAgent Communication:</strong> <code>*.dynatrace.com:443</code> (or regional domain)</li>
+                    <li><strong>ActiveGate (optional):</strong> Internal network to ActiveGate, ActiveGate to Dynatrace</li>
+                    <li><strong>User Access:</strong> Web browser to <code>*.dynatrace.com:443</code></li>
+                    <li><strong>API Access:</strong> <code>*.dynatrace.com:443</code> from automation tools</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <h3>🔒 Firewall Requirements - Managed</h3>
+                <ul>
+                    <li><strong>OneAgent Communication:</strong> Internal to cluster (port 8021, 9999)</li>
+                    <li><strong>User Access:</strong> Internal to load balancer/cluster (HTTPS 443)</li>
+                    <li><strong>API Access:</strong> Internal to cluster (HTTPS 443)</li>
+                    <li><strong>Cluster Nodes:</strong> Inter-node communication (ports 8021, 9042, 9300, etc.)</li>
+                    <li><strong>Updates (optional):</strong> Cluster to <code>download.dynatrace.com:443</code></li>
+                </ul>
+            </div>
+
+            <div class="best-practice">
+                <strong>Security Note:</strong> Both deployments use certificate pinning and mutual authentication 
+                to ensure secure communication between components.
+            </div>
+        </div>
+
+        <!-- Data Privacy & Compliance -->
+        <div class="slide">
+            <h2>Data Privacy & Compliance</h2>
+
+            <div class="content-box">
+                <h3>What Data is Collected?</h3>
+                <ul>
+                    <li><strong>Performance Metrics:</strong> CPU, memory, response times, error rates</li>
+                    <li><strong>Topology Data:</strong> Service relationships, dependencies, configurations</li>
+                    <li><strong>Request Data:</strong> URLs, HTTP headers, SQL statements (configurable masking)</li>
+                    <li><strong>Logs:</strong> Application and system logs (opt-in)</li>
+                    <li><strong>User Data:</strong> Session behavior, geographic location (anonymized)</li>
+                </ul>
+            </div>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h3>✅ SaaS Data Controls</h3>
+                    <ul>
+                        <li>Regional data residency (6 regions)</li>
+                        <li>Data never crosses regional boundaries</li>
+                        <li>Built-in data masking and privacy rules</li>
+                        <li>Automatic GDPR compliance features</li>
+                        <li>Data retention: 35 days (default)</li>
+                        <li>Data deletion on environment closure</li>
+                        <li>SOC 2, ISO 27001, HIPAA-ready certified</li>
+                    </ul>
+                </div>
+
+                <div class="pros">
+                    <h3>✅ Managed Data Controls</h

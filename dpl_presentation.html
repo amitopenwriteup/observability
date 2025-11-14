@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynatrace Pattern Language (DPL)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            width: 90vw;
+            max-width: 1200px;
+            height: 85vh;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 60px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            animation: slideIn 0.5s ease-out;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #3b82f6;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #60a5fa;
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            color: #93c5fd;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #e0e7ff;
+        }
+
+        .code-block {
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid #3b82f6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            color: #60a5fa;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .highlight {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .matcher-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .matcher-tag {
+            padding: 12px 18px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(109, 40, 217, 0.3) 100%);
+            border-radius: 8px;
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            font-size: 1em;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .matcher-tag:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.5) 0%, rgba(109, 40, 217, 0.5) 100%);
+            transform: scale(1.05);
+        }
+
+        .example-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 5px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .step-container {
+            margin-top: 30px;
+        }
+
+        .step {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-left: 4px solid #3b82f6;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .step:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-indicator {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            font-size: 1.2em;
+            color: #60a5fa;
+            background: rgba(59, 130, 246, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .logo {
+            position: fixed;
+            top: 30px;
+            left: 40px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .syntax-box {
+            background: rgba(139, 92, 246, 0.15);
+            border: 2px solid #8b5cf6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .table-container {
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        th {
+            background: rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">Dynatrace</div>
+    <div class="slide-indicator">
+        <span id="currentSlide">1</span> / <span id="totalSlides">9</span>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>Dynatrace Pattern Language</h1>
+            <div class="subtitle">(DPL)</div>
+            <div class="content" style="margin-top: 40px;">
+                <p style="font-size: 1.4em;">A powerful pattern matching language for log parsing and data extraction</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: What is DPL -->
+        <div class="slide">
+            <h2>What is DPL?</h2>
+            <div class="content">
+                <p style="margin-bottom: 30px;">DPL is a pattern language that uses <span class="highlight">matchers</span> - mini-patterns that match specific data types.</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3><span class="icon">🎯</span>Pattern Matching</h3>
+                        <div class="content" style="font-size: 1em;">
+                            Describe patterns using intuitive matchers like INTEGER, IPADDR, TIMESTAMP
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h3><span class="icon">📊</span>Data Extraction</h3>
+                        <div class="content" style="font-size: 1em;">
+                            Parse and extract structured data from unstructured logs
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h3><span class="icon">🔍</span>Flexible Parsing</h3>
+                        <div class="content" style="font-size: 1em;">
+                            Handle various data formats with schema-on-read approach
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h3><span class="icon">⚡</span>High Performance</h3>
+                        <div class="content" style="font-size: 1em;">
+                            Efficient left-to-right interpretation for fast processing
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Use Cases -->
+        <div class="slide">
+            <h2>DPL Use Cases</h2>
+            <div class="content">
+                <div class="step">
+                    <strong>📝 Log Parsing</strong> - Extract structured fields from application logs
+                </div>
+                <div class="step">
+                    <strong>🔐 Security Analysis</strong> - Parse security events and identify patterns
+                </div>
+                <div class="step">
+                    <strong>📈 Performance Monitoring</strong> - Extract metrics from performance logs
+                </div>
+                <div class="step">
+                    <strong>🐛 Troubleshooting</strong> - Identify patterns in error logs and traces
+                </div>
+                <div class="step">
+                    <strong>💼 Business Analytics</strong> - Extract business events from application logs
+                </div>
+                <div class="step">
+                    <strong>🌐 Network Analysis</strong> - Parse network logs and traffic data
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Common Matchers -->
+        <div class="slide">
+            <h2>Common Matchers</h2>
+            <div class="content">
+                <p style="margin-bottom: 20px;">DPL provides matchers for all common data types:</p>
+                <div class="matcher-list">
+                    <div class="matcher-tag">INTEGER / INT</div>
+                    <div class="matcher-tag">DOUBLE</div>
+                    <div class="matcher-tag">IPADDR</div>
+                    <div class="matcher-tag">TIMESTAMP</div>
+                    <div class="matcher-tag">LD (letters/digits)</div>
+                    <div class="matcher-tag">SPACE</div>
+                    <div class="matcher-tag">EOL</div>
+                    <div class="matcher-tag">PUNCT</div>
+                    <div class="matcher-tag">WORD</div>
+                    <div class="matcher-tag">UUID</div>
+                    <div class="matcher-tag">EMAIL</div>
+                    <div class="matcher-tag">URL</div>
+                </div>
+                <div class="example-box" style="margin-top: 30px;">
+                    <strong>Example:</strong> <code class="highlight">INT</code> matches integer numbers<br>
+                    <strong>Example:</strong> <code class="highlight">IPADDR</code> matches IPv4 or IPv6 addresses
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Basic Syntax -->
+        <div class="slide">
+            <h2>Basic Pattern Syntax</h2>
+            <div class="content">
+                <p style="margin-bottom: 20px;">Simple one-liner pattern:</p>
+                <div class="code-block">INT ' ' IPADDR:ip EOL</div>
+                
+                <p style="margin-top: 30px; margin-bottom: 20px;">Same pattern with comments (more readable):</p>
+                <div class="code-block">/* This pattern expects an integer and IP address */
+INT             // an integer
+' '             // followed by single space
+IPADDR:ip       // IPv4/IPv6 address, extracted as 'ip'
+EOL             // line is terminated with line feed</div>
+                
+                <div class="example-box" style="margin-top: 30px;">
+                    <strong>Key Points:</strong><br>
+                    • Patterns interpreted left to right<br>
+                    • Whitespace, line breaks, and comments ignored<br>
+                    • All matchers must match, but only some extract data
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Export Names -->
+        <div class="slide">
+            <h2>Export Names & Data Extraction</h2>
+            <div class="content">
+                <p style="margin-bottom: 20px;">A matcher extracts data only when assigned an <span class="highlight">export name</span>:</p>
+                
+                <div class="code-block">INT:seq ',' LD:uname ',' IPADDR:user_ip EOL</div>
+                
+                <div class="feature-grid" style="margin-top: 30px;">
+                    <div class="feature-card">
+                        <h3>With Export Name</h3>
+                        <div class="content" style="font-size: 1em;">
+                            <code>IPADDR:ip</code><br><br>
+                            ✅ Matches pattern<br>
+                            ✅ Extracts data<br>
+                            ✅ Creates field 'ip'
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Without Export Name</h3>
+                        <div class="content" style="font-size: 1em;">
+                            <code>','</code><br><br>
+                            ✅ Matches pattern<br>
+                            ❌ No data extraction<br>
+                            ❌ Not visible in queries
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="example-box" style="margin-top: 30px;">
+                    <strong>Export name syntax:</strong> <code class="highlight">MATCHER:export_name</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Matcher Expression Syntax -->
+        <div class="slide">
+            <h2>Matcher Expression Syntax</h2>
+            <div class="content">
+                <p style="margin-bottom: 20px;">Full syntax (from right to left):</p>
+                
+                <div class="syntax-box">
+[lookaround] MATCHER ['(' configuration ')'] [quantifier] [optional] [':' export_name]
+                </div>
+                
+                <div class="step-container">
+                    <div class="step">
+                        <strong>MATCHER</strong> - The core pattern (e.g., INT, IPADDR, TIMESTAMP)
+                    </div>
+                    <div class="step">
+                        <strong>configuration</strong> - Optional parameters in parentheses: <code>TIMESTAMP('yyyy-MM-dd')</code>
+                    </div>
+                    <div class="step">
+                        <strong>quantifier</strong> - How many times to match: <code>*</code> (0+), <code>+</code> (1+), <code>?</code> (0-1)
+                    </div>
+                    <div class="step">
+                        <strong>optional</strong> - Mark as optional with <code>~</code> (outputs NULL if missing)
+                    </div>
+                    <div class="step">
+                        <strong>export_name</strong> - Field name for queries: <code>:ip</code>, <code>:username</code>
+                    </div>
+                    <div class="step">
+                        <strong>lookaround</strong> - Conditional matching (look ahead/behind)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Pattern Matching Example -->
+        <div class="slide">
+            <h2>Step-by-Step Pattern Matching</h2>
+            <div class="content">
+                <p style="margin-bottom: 20px;"><strong>Input Data:</strong></p>
+                <div class="code-block">1,alice,192.168.1.12,bob,10.6.24.183,mallory,192.168.1.3</div>
+                
+                <p style="margin-bottom: 20px;"><strong>Pattern:</strong></p>
+                <div class="code-block">INT:seq ',' LD:uname ',' IPADDR:user_ip EOL</div>
+                
+                <div class="step-container">
+                    <div class="step">
+                        <strong>Step 1:</strong> Match <code>INT:seq</code> → finds "1", extracts as seq
+                    </div>
+                    <div class="step">
+                        <strong>Step 2:</strong> Match <code>','</code> → finds comma, moves forward
+                    </div>
+                    <div class="step">
+                        <strong>Step 3:</strong> Match <code>LD:uname</code> → finds "alice", extracts as uname
+                    </div>
+                    <div class="step">
+                        <strong>Step 4:</strong> Match <code>','</code> → finds comma, moves forward
+                    </div>
+                    <div class="step">
+                        <strong>Step 5:</strong> Match <code>IPADDR:user_ip</code> → finds "192.168.1.12", extracts as user_ip
+                    </div>
+                    <div class="step">
+                        <strong>Step 6:</strong> Pattern complete, reset and continue with remaining data
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Output Result -->
+        <div class="slide">
+            <h2>Pattern Matching Output</h2>
+            <div class="content">
+                <p style="margin-bottom: 20px;"><strong>Raw Input:</strong></p>
+                <div class="code-block">1,alice,192.168.1.12,bob,10.6.24.183,mallory,192.168.1.3</div>
+                
+                <p style="margin-top: 30px; margin-bottom: 20px;"><strong>Structured Output:</strong></p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>seq</th>
+                                <th>uname</th>
+                                <th>user_ip</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>alice</td>
+                                <td>192.168.1.1</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>bob</td>
+                                <td>10.6.24.18</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>mallory</td>
+                                <td>192.168.1.3</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="example-box" style="margin-top: 30px;">
+                    <strong>✨ Result:</strong> Unstructured log data transformed into queryable structured data!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+        <button id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
+                changeSlide(1);
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

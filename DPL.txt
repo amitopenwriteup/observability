@@ -1,0 +1,12 @@
+DPL
+
+fetch logs
+| filter matchesValue(log.source, "/var/log/syslog")
+
+TIMESTAMP('YYYY-MM-DDTHH:MM:SS'):timestamp LD']'LD :command
+
+LD TIMESTAMP('YYYY')LD']'LD
+
+fetch logs
+| filter matchesValue(log.source, "/var/log/syslog")
+| limit 1

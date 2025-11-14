@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLO & Dynatrace Dashboards Workshop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 60px;
+            display: none;
+            flex-direction: column;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-header {
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            color: #4a5568;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.4em;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .box h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .info-box {
+            background: #f7fafc;
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .highlight {
+            background: #fef5e7;
+            border-left: 5px solid #f39c12;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            padding: 12px 0;
+            font-size: 1.2em;
+            color: #4a5568;
+            position: relative;
+            padding-left: 35px;
+        }
+
+        li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .metric-title {
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .formula {
+            background: #2d3748;
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.3em;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            color: #718096;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .diagram {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .flow-item {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .arrow {
+            display: inline-block;
+            color: #667eea;
+            font-size: 2em;
+            margin: 0 10px;
+        }
+
+        .dynatrace-feature {
+            background: linear-gradient(135deg, #1496ff 0%, #0b7fe0 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+
+        .dynatrace-feature h4 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .best-practice {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .best-practice h4 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="slide-header">
+                <h1>🎯 Service Level Objectives (SLOs)</h1>
+                <p class="subtitle">Building Reliable Systems with Dynatrace</p>
+            </div>
+            <div class="content">
+                <div class="info-box">
+                    <h3>Workshop Objectives</h3>
+                    <ul>
+                        <li>Understand SLO fundamentals and terminology</li>
+                        <li>Learn how to define meaningful SLOs</li>
+                        <li>Explore Dynatrace dashboard capabilities</li>
+                        <li>Build custom monitoring dashboards</li>
+                        <li>Apply SLO concepts to Linux host monitoring</li>
+                    </ul>
+                </div>
+                <div class="highlight">
+                    <h3>Why SLOs Matter</h3>
+                    <p style="font-size: 1.2em; color: #4a5568; line-height: 1.6;">
+                        SLOs bridge the gap between engineering reliability and business objectives, 
+                        providing quantifiable targets that align technical performance with user expectations.
+                    </p>
+                </div>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()" disabled>← Previous</button>
+                <span class="slide-counter">Slide <span id="current">1</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Slide 2: SLO Terminology -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>📚 Core SLO Terminology</h2>
+            </div>
+            <div class="content">
+                <div class="two-column">
+                    <div class="box">
+                        <h3>SLI</h3>
+                        <p><strong>Service Level Indicator</strong></p>
+                        <p>A quantitative measure of service behavior</p>
+                        <p style="margin-top: 15px;"><em>Example:</em> Request latency, error rate, system throughput</p>
+                    </div>
+                    <div class="box">
+                        <h3>SLO</h3>
+                        <p><strong>Service Level Objective</strong></p>
+                        <p>Target value or range for an SLI</p>
+                        <p style="margin-top: 15px;"><em>Example:</em> 95% of requests < 200ms</p>
+                    </div>
+                </div>
+                <div class="two-column" style="margin-top: 20px;">
+                    <div class="box">
+                        <h3>SLA</h3>
+                        <p><strong>Service Level Agreement</strong></p>
+                        <p>Business contract with consequences</p>
+                        <p style="margin-top: 15px;"><em>Example:</em> 99.9% uptime or credit issued</p>
+                    </div>
+                    <div class="box">
+                        <h3>Error Budget</h3>
+                        <p><strong>Allowed Downtime</strong></p>
+                        <p>100% - SLO = acceptable errors</p>
+                        <p style="margin-top: 15px;"><em>Example:</em> 0.1% = 43 min/month</p>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()">← Previous</button>
+                <span class="slide-counter">Slide <span id="current">2</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Slide 3: SLO Hierarchy -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🔺 The SLO Hierarchy</h2>
+            </div>
+            <div class="content">
+                <div class="diagram">
+                    <div style="margin: 20px 0;">
+                        <div class="flow-item" style="background: #e74c3c;">SLA (Business Contract)</div>
+                        <div class="arrow">↓</div>
+                        <div class="flow-item" style="background: #f39c12;">SLO (Internal Target)</div>
+                        <div class="arrow">↓</div>
+                        <div class="flow-item" style="background: #3498db;">SLI (Measurement)</div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <h3>Relationship Example</h3>
+                    <ul>
+                        <li><strong>SLA:</strong> We promise 99.9% availability to customers (with penalties)</li>
+                        <li><strong>SLO:</strong> We target 99.95% availability internally (buffer zone)</li>
+                        <li><strong>SLI:</strong> We measure uptime using successful health checks / total checks</li>
+                    </ul>
+                </div>
+                <div class="formula">
+                    SLA ≤ SLO = f(SLI)
+                </div>
+                <p style="text-align: center; color: #718096; font-size: 1.1em;">
+                    Always set SLOs stricter than SLAs to provide safety margin
+                </p>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()">← Previous</button>
+                <span class="slide-counter">Slide <span id="current">3</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Common SLIs -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>📊 Common SLI Categories</h2>
+            </div>
+            <div class="content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>SLI Examples</th>
+                            <th>Measurement Method</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Availability</strong></td>
+                            <td>Uptime percentage, successful requests</td>
+                            <td>Successful probes / Total probes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Latency</strong></td>
+                            <td>Response time, processing duration</td>
+                            <td>95th percentile response time</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Quality</strong></td>
+                            <td>Error rate, data accuracy</td>
+                            <td>Failed requests / Total requests</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Throughput</strong></td>
+                            <td>Requests per second, bandwidth</td>
+                            <td>Requests processed / Time period</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Durability</strong></td>
+                            <td>Data retention, backup success</td>
+                            <td>Data retained / Data stored</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="highlight">
+                    <h3>💡 Pro Tip</h3>
+                    <p style="font-size: 1.1em; color: #4a5568;">
+                        Choose SLIs that directly impact user experience. Technical metrics like CPU usage 
+                        are useful but should be secondary to user-facing indicators.
+                    </p>
+                </div>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()">← Previous</button>
+                <span class="slide-counter">Slide <span id="current">4</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Defining Good SLOs -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>✅ Defining Good SLOs</h2>
+            </div>
+            <div class="content">
+                <div class="best-practice">
+                    <h4>1. User-Centric Focus</h4>
+                    <p>Define SLOs from the user's perspective, not internal system metrics</p>
+                </div>
+                <div class="best-practice">
+                    <h4>2. Measurable & Achievable</h4>
+                    <p>Must be quantifiable with existing tools and realistically attainable</p>
+                </div>
+                <div class="best-practice">
+                    <h4>3. Business-Aligned</h4>
+                    <p>Support business objectives and customer satisfaction goals</p>
+                </div>
+                <div class="best-practice">
+                    <h4>4. Actionable</h4>
+                    <p>Clear actions when SLO is at risk or violated</p>
+                </div>
+                <div class="info-box">
+                    <h3>Common Pitfalls to Avoid</h3>
+                    <ul>
+                        <li>Setting SLOs too aggressive (100% uptime is unrealistic)</li>
+                        <li>Measuring too many SLIs (focus on what matters)</li>
+                        <li>Internal-only metrics with no user impact</li>
+                        <li>Ignoring cost of maintaining high SLOs</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()">← Previous</button>
+                <span class="slide-counter">Slide <span id="current">5</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Error Budgets -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>💰 Error Budgets in Action</h2>
+            </div>
+            <div class="content">
+                <div class="info-box">
+                    <h3>What is an Error Budget?</h3>
+                    <p style="font-size: 1.2em; color: #4a5568; line-height: 1.6;">
+                        The amount of unreliability a service can accumulate before consequences occur. 
+                        It's calculated as <strong>100% - SLO%</strong> and represents allowable downtime or errors.
+                    </p>
+                </div>
+                <div class="formula">
+                    Error Budget = (1 - SLO) × Time Period
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>SLO Target</th>
+                            <th>Error Budget</th>
+                            <th>Downtime/Month</th>
+                            <th>Downtime/Year</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>99.9% (3 nines)</td>
+                            <td>0.1%</td>
+                            <td>43.2 minutes</td>
+                            <td>8.76 hours</td>
+                        </tr>
+                        <tr>
+                            <td>99.95%</td>
+                            <td>0.05%</td>
+                            <td>21.6 minutes</td>
+                            <td>4.38 hours</td>
+                        </tr>
+                        <tr>
+                            <td>99.99% (4 nines)</td>
+                            <td>0.01%</td>
+                            <td>4.32 minutes</td>
+                            <td>52.6 minutes</td>
+                        </tr>
+                        <tr>
+                            <td>99.999% (5 nines)</td>
+                            <td>0.001%</td>
+                            <td>26 seconds</td>
+                            <td>5.26 minutes</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="highlight">
+                    <p style="font-size: 1.1em;">
+                        <strong>Use error budgets to balance innovation vs reliability:</strong> 
+                        Budget remaining = deploy new features. Budget depleted = focus on stability.
+                    </p>
+                </div>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()">← Previous</button>
+                <span class="slide-counter">Slide <span id="current">6</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Introduction to Dynatrace -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🚀 Dynatrace Overview</h2>
+            </div>
+            <div class="content">
+                <div class="info-box">
+                    <h3>What is Dynatrace?</h3>
+                    <p style="font-size: 1.2em; color: #4a5568; line-height: 1.6;">
+                        An AI-powered, full-stack monitoring platform that provides automated observability 
+                        for cloud-native environments, applications, and infrastructure.
+                    </p>
+                </div>
+                <div class="two-column">
+                    <div>
+                        <div class="dynatrace-feature">
+                            <h4>🤖 AI-Powered Analysis</h4>
+                            <p>Davis AI engine for automatic root cause analysis and anomaly detection</p>
+                        </div>
+                        <div class="dynatrace-feature">
+                            <h4>📈 Full-Stack Monitoring</h4>
+                            <p>From infrastructure to application code with automatic dependency mapping</p>
+                        </div>
+                        <div class="dynatrace-feature">
+                            <h4>⚡ Real-Time Insights</h4>
+                            <p>Live metrics with sub-second granularity for immediate visibility</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="dynatrace-feature">
+                            <h4>🎯 Built-in SLO Support</h4>
+                            <p>Native SLO management with error budget tracking and alerts</p>
+                        </div>
+                        <div class="dynatrace-feature">
+                            <h4>🔗 Smart Integration</h4>
+                            <p>Seamless integration with CI/CD, cloud platforms, and tools</p>
+                        </div>
+                        <div class="dynatrace-feature">
+                            <h4>📊 Custom Dashboards</h4>
+                            <p>Flexible dashboard creation with powerful visualization options</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()">← Previous</button>
+                <span class="slide-counter">Slide <span id="current">7</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Dynatrace SLO Features -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🎯 Dynatrace SLO Capabilities</h2>
+            </div>
+            <div class="content">
+                <div class="info-box">
+                    <h3>Native SLO Management</h3>
+                    <ul>
+                        <li><strong>Automatic SLI Calculation:</strong> Dynatrace automatically measures key service indicators</li>
+                        <li><strong>Multi-metric SLOs:</strong> Combine availability, performance, and error rates</li>
+                        <li><strong>Error Budget Tracking:</strong> Real-time consumption and burn rate alerts</li>
+                        <li><strong>Historical Analysis:</strong> Track SLO performance over time with trend analysis</li>
+                    </ul>
+                </div>
+                <div class="two-column">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Availability SLO</span>
+                            <span style="color: #28a745; font-weight: bold;">✓ HEALTHY</span>
+                        </div>
+                        <div class="metric-value">99.97%</div>
+                        <p style="color: #718096;">Target: 99.9% | Budget: 70% remaining</p>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Latency SLO</span>
+                            <span style="color: #ffc107; font-weight: bold;">⚠ WARNING</span>
+                        </div>
+                        <div class="metric-value">185ms</div>
+                        <p style="color: #718096;">Target: <200ms | Budget: 15% remaining</p>
+                    </div>
+                </div>
+                <div class="highlight">
+                    <h3>Key Benefits</h3>
+                    <p style="font-size: 1.1em; color: #4a5568;">
+                        Dynatrace's SLO engine automatically alerts teams before SLOs are breached, 
+                        enabling proactive incident response and maintaining service reliability.
+                    </p>
+                </div>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()">← Previous</button>
+                <span class="slide-counter">Slide <span id="current">8</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Dynatrace Dashboard Types -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>📊 Dynatrace Dashboard Types</h2>
+            </div>
+            <div class="content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Dashboard Type</th>
+                            <th>Purpose</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Executive Dashboard</strong></td>
+                            <td>High-level business metrics and SLO compliance</td>
+                            <td>Leadership, stakeholder reporting</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Operations Dashboard</strong></td>
+                            <td>Real-time system health and incidents</td>
+                            <td>NOC teams, on-call engineers</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Service Dashboard</strong></td>
+                            <td>Specific service performance and dependencies</td>
+                            <td>Development teams, service owners</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Infrastructure Dashboard</strong></td>
+                            <td>Host, network, and resource utilization</td>
+                            <td>Platform teams, SREs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>User Experience Dashboard</strong></td>
+                            <td>Real user monitoring and synthetic tests</td>
+                            <td>Product teams, UX designers</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="info-box">
+                    <h3>Dashboard Best Practices</h3>
+                    <ul>
+                        <li>One dashboard per audience/purpose</li>
+                        <li>Place most critical metrics at the top</li>
+                        <li>Use consistent color schemes for status</li>
+                        <li>Include context and thresholds</li>
+                        <li>Enable auto-refresh for live monitoring</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()">← Previous</button>
+                <span class="slide-counter">Slide <span id="current">9</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Custom Dashboard Components -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🧩 Dynatrace Tile Components</h2>
+            </div>
+            <div class="content">
+                <div class="two-column">
+                    <div>
+                        <div class="dynatrace-feature">
+                            <h4>📈 Chart Tiles</h4>
+                            <p>Line, area, bar charts for time-series data visualization</p>
+                        </div>
+                        <div class="dynatrace-feature">
+                            <h4>🔢 Single Value Tiles</h4>
+                            <p>Display key metrics with trend indicators and thresholds</p>
+                        </div>
+                        <div class="dynatrace-feature">
+                            <h4>📊 Top List Tiles</h4>
+                            <p>Rank services, hosts, or applications by performance</p>
+                        </div>
+                        <div class="dynatrace-feature">
+                            <h4>🌡️ Gauge Tiles</h4>
+                            <p>Visual representation of metrics against targets</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="dynatrace-feature">
+                            <h4>📋 Table Tiles</h4>
+                            <p>Detailed multi-column data views with sorting</p>
+                        </div>
+                        <div class="dynatrace-feature">
+                            <h4>🗺️ Topology Tiles</h4>
+                            <p>Service dependencies and relationships mapping</p>
+                        </div>
+                        <div class="dynatrace-feature">
+                            <h4>📝 Markdown Tiles</h4>
+                            <p>Custom text, documentation, and annotations</p>
+                        </div>
+                        <div class="dynatrace-feature">
+                            <h4>🎯 SLO Tiles</h4>
+                            <p>Dedicated SLO status, error budget, and burn rate</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="highlight">
+                    <h3>💡 Pro Tip: Data Explorer</h3>
+                    <p style="font-size: 1.1em; color: #4a5568;">
+                        Use Dynatrace Data Explorer to query metrics with DQL (Dynatrace Query Language) 
+                        for advanced filtering, aggregation, and custom calculations before adding to dashboards.
+                    </p>
+                </div>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()">← Previous</button>
+                <span class="slide-counter">Slide <span id="current">10</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Linux Host SLO Example -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🐧 Linux Host SLO Implementation</h2>
+            </div>
+            <div class="content">
+                <div class="info-box">
+                    <h3>Sample SLOs for Linux Hosts</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>SLI</th>
+                            <th>Measurement</th>
+                            <th>SLO Target</th>
+                            <th>Dynatrace Metric</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Host Availability</strong></td>
+                            <td>Uptime percentage</td>
+                            <td>99.9%</td>
+                            <td>builtin:host.availability</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CPU Performance</strong></td>
+                            <td>CPU usage < threshold</td>
+                            <td>< 80% for 95% of time</td>
+                            <td>builtin:host.cpu.usage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Memory Availability</strong></td>
+                            <td>Free memory available</td>
+                            <td>> 15% free memory</td>
+                            <td>builtin:host.mem.available</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Disk I/O Latency</strong></td>
+                            <td>Read/write latency</td>
+                            <td>< 20ms for 95% requests</td>
+                            <td>builtin:host.disk.readTime</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Network Performance</strong></td>
+                            <td>Packet loss rate</td>
+                            <td>< 0.1% packet loss</td>
+                            <td>builtin:host.net.packetsDropped</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="two-column" style="margin-top: 20px;">
+                    <div class="best-practice">
+                        <h4>✅ Do This</h4>
+                        <ul style="margin-top: 10px;">
+                            <li style="font-size: 0.95em;">Monitor user-facing services</li>
+                            <li style="font-size: 0.95em;">Set realistic thresholds</li>
+                            <li style="font-size: 0.95em;">Use percentiles (p95, p99)</li>
+                            <li style="font-size: 0.95em;">Review SLOs quarterly</li>
+                        </ul>
+                    </div>
+                    <div class="highlight">
+                        <h4>❌ Avoid This</h4>
+                        <ul style="margin-top: 10px;">
+                            <li style="font-size: 0.95em;">100% availability targets</li>
+                            <li style="font-size: 0.95em;">Too many competing SLOs</li>
+                            <li style="font-size: 0.95em;">Internal-only metrics</li>
+                            <li style="font-size: 0.95em;">Static, never-reviewed SLOs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()">← Previous</button>
+                <span class="slide-counter">Slide <span id="current">11</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Slide 12: Summary & Next Steps -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🎓 Summary & Next Steps</h2>
+            </div>
+            <div class="content">
+                <div class="info-box">
+                    <h3>Key Takeaways</h3>
+                    <ul>
+                        <li><strong>SLIs</strong> are the measurements, <strong>SLOs</strong> are the targets, <strong>SLAs</strong> are the contracts</li>
+                        <li>Error budgets balance innovation with reliability</li>
+                        <li>Good SLOs are user-centric, measurable, and actionable</li>
+                        <li>Dynatrace provides native SLO management with AI-powered insights</li>
+                        <li>Custom dashboards enable audience-specific monitoring views</li>
+                    </ul>
+                </div>
+                <div class="two-column" style="margin-top: 30px;">
+                    <div class="box">
+                        <h3>📋 Hands-On Lab</h3>
+                        <ul style="color: white;">
+                            <li>Create custom Linux host dashboard</li>
+                            <li>Define SLOs for key metrics</li>
+                            <li>Configure error budget alerts</li>
+                            <li>Build incident response workflows</li>
+                        </ul>
+                    </div>
+                    <div class="box">
+                        <h3>📚 Resources</h3>
+                        <ul style="color: white;">
+                            <li>Dynatrace Documentation</li>
+                            <li>SRE Book (Google)</li>
+                            <li>DQL Query Language Guide</li>
+                            <li>Community Best Practices</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight" style="margin-top: 30px;">
+                    <h3>🚀 Ready to Build!</h3>
+                    <p style="font-size: 1.3em; color: #4a5568; text-align: center;">
+                        Let's apply these concepts to create a real Linux host monitoring dashboard!
+                    </p>
+                </div>
+            </div>
+            <div class="navigation">
+                <button onclick="prevSlide()">← Previous</button>
+                <span class="slide-counter">Slide <span id="current">12</span> of <span id="total">12</span></span>
+                <button onclick="nextSlide()" disabled>Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            slides[currentSlide].classList.add('active');
+            
+            // Update all slide counters on the current slide
+            const currentCounters = slides[currentSlide].querySelectorAll('#current');
+            currentCounters.forEach(counter => {
+                counter.textContent = currentSlide + 1;
+            });
+            
+            // Update navigation buttons
+            const prevButtons = slides[currentSlide].querySelectorAll('button:first-child');
+            const nextButtons = slides[currentSlide].querySelectorAll('button:last-child');
+            
+            prevButtons.forEach(btn => {
+                btn.disabled = currentSlide === 0;
+            });
+            
+            nextButtons.forEach(btn => {
+                btn.disabled = currentSlide === totalSlides - 1;
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

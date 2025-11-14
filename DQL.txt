@@ -1,0 +1,121 @@
+1) fetch logs
+
+2) fetch logs
+  | limit 100
+
+3)fetch dt.entity.host
+
+4)fetch dt.entity.process_group
+
+5)fetch dt.entity.host
+| filter id == "HOST-D00AF059376716EE"
+| fields ipAddress, osType, osArchitecture, entity.name
+
+6)
+fetch dt.entity.host
+| filter id == "HOST-D00AF059376716EE"
+| fields id, 
+         entity.name, 
+         ipAddress,
+         osType,
+         osVersion,
+         cpuCores,
+         physicalMemory,
+         hypervisorType,
+         cloudType,
+         monitoringMode,
+         state,
+         tags
+| limit 1
+
+7)
+fetch dt.entity.host
+| filter id == "HOST-D00AF059376716EE"
+| fields id, ipAddress, osType, cpuCores
+8)
+fetch dt.entity.host
+| filter id == "HOST-D00AF059376716EE"
+| fields id, entity.name, physicalMemory, cpuCores
+| fieldsAdd memoryGB = physicalMemory / 1024 /1024
+
+9)
+timeseries avgCpu = avg(dt.host.cpu.usage)
+
+10)
+timeseries avg(dt.host.availability)
+
+11)
+timeseries avgcpu = avg(dt.host.cpu.usage), by: {dt.entity.host}| fieldsAdd  hostName  = dt.entity.host
+
+12)
+
+timeseries avgcpu = avg(dt.host.cpu.usage), by: {dt.entity.host}| fieldsAdd  hostName  = entityName(dt.entity.host)
+
+13)
+
+GEt the memory
+
+timeseries avgmem = avg(dt.host.memory.usage), by: {dt.entity.host}| fieldsAdd  hostName  = entityName(dt.entity.host)
+
+14)
+
+timeseries usage = avg(dt.process.cpu.usage, filter: { dt.entity.process_group_instance == "PROCESS_GROUP_INSTANCE-538CC3B42212A65A" }), by: { dt.entity.process_group_instance }
+| fieldsAdd entityName(dt.entity.process_group_instance)
+| limit 100
+
+15)
+timeseries memusage = avg(dt.process.memory.working_set_size)
+
+16)
+
+timeseries working_set_size = avg(dt.process.memory.working_set_size, filter: { in(dt.entity.process_group_instance, classicEntitySelector("type(PROCESS_GROUP_INSTANCE) AND fromRelationship.isProcessOf(type(HOST),entityId(HOST-D00AF059376716EE))")) }), by: { dt.entity.process_group_instance }
+| fieldsAdd entityName(dt.entity.process_group_instance)
+| sort arraySum(working_set_size) desc
+| limit 10
+
+17)
+fetch logs
+|filter loglevel == "INFO"
+|limit 1000
+
+fetch logs
+| filter matchesValue(dt.entity.host, "HOST-D00AF059376716EE")
+| filter loglevel == "INFO"
+ 
+
+fetch logs
+| filter loglevel == "ERROR" or loglevel == "WARN"
+| limit 1000
+
+
+fetch logs, from: now() - 1h
+| filter loglevel == "INFO"
+| fields timestamp, loglevel, content, dt.entity.host
+| sort timestamp desc
+| limit 100
+
+fetch logs
+| filter loglevel == "INFO"
+| fields timestamp, loglevel, content, dt.entity.host, dt.entity.process_group_instance
+| fieldsAdd 
+    hostName = entityName(dt.entity.host),
+    processName = entityName(dt.entity.process_group_instance)
+| sort timestamp desc
+| limit 100
+
+
+fetch logs, from: now() - 24h
+| filter loglevel == "INFO"
+| summarize count(), by: { loglevel }
+| sort `count()` desc
+
+fetch logs
+| filter (loglevel == "INFO")
+    and matchesPhrase(content, "root")
+| fields timestamp, loglevel, content
+| sort timestamp desc
+| limit 100
+
+
+
+

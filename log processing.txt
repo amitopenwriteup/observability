@@ -1,0 +1,32 @@
+Fix unrecognized timestamp and loglevel
+
+fetch logs
+| filter matchesValue(log.source, "/var/log/syslog.#")
+
+
+1) Go to Settings > Log Monitoring > Processing and select Add rule.
+
+Rule name: MyApp log processor
+Matcher: matchesValue(log.source, "/var/log/syslog.#")
+
+2)
+Enter the rule definition to parse out the timestamp, thread name, and log level.
+Rule definition: PARSE(content, "TIMESTAMP('MMMMM d, yyyy HH:mm:ss'):timestamp ' [' LD:thread.name '] ' UPPER:loglevel")
+
+TIMESTAMP matcher is used to look for the specific datetime format, and the matched value is set as the existing timestamp log attribute.
+LD (Line Data) matcher is used to match any chars between literals ' [' and '] '.
+UPPER literal is used to match uppercase letters.
+The remaining part of the content is not matched.
+
+Enter the following log data fragment manually in the Log sample text box.
+
+{
+   "event.type":"LOG",
+   "content":"April 24, 2022 09:59:52 [myPool-thread-1] INFO Lorem ipsum dolor sit amet",
+   "status":"NONE",
+   "timestamp":"1650889391528",
+   "log.source":"/var/log/myapp/application.log.#",
+   "loglevel":"NONE"
+ }
+
+Save your log processing rule.
